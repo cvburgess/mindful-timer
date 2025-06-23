@@ -63,6 +63,8 @@ struct ContentView: View {
                 VStack(spacing: 20) {
                     VStack(spacing: 10) {
                         Button(action: {
+                            showLengthPicker = false
+                            showBreakPicker = false
                             showRoundsPicker.toggle()
                         }) {
                                 Text(formatRounds(rounds))
@@ -84,6 +86,8 @@ struct ContentView: View {
                     
                     VStack(spacing: 10) {
                         Button(action: {
+                            showRoundsPicker = false
+                            showBreakPicker = false
                             showLengthPicker.toggle()
                         }) {
                                 Text("\(formatTime(lengthTotalSeconds)) each")
@@ -92,14 +96,14 @@ struct ContentView: View {
                         }.buttonStyle(.glass)
                         
                         if showLengthPicker {
-                            HStack(spacing: 20) {
+                            HStack(spacing: 0) {
                                 Picker("Minutes", selection: $lengthMinutes) {
                                     ForEach(0...10, id: \.self) { minute in
                                         Text("\(minute)m").tag(minute)
                                     }
                                 }
                                 .pickerStyle(WheelPickerStyle())
-                                .frame(height: 120)
+                                .frame(width: 100, height: 120)
                                 .onChange(of: lengthMinutes) { _, newValue in
                                     if newValue == 0 && lengthSecondsOnly == 0 {
                                         lengthSecondsOnly = 1
@@ -114,7 +118,7 @@ struct ContentView: View {
                                     }
                                 }
                                 .pickerStyle(WheelPickerStyle())
-                                .frame(height: 120)
+                                .frame(width: 100, height: 120)
                                 .onChange(of: lengthSecondsOnly) { _, newValue in
                                     if lengthMinutes == 0 && newValue == 0 {
                                         lengthSecondsOnly = 1
@@ -126,6 +130,8 @@ struct ContentView: View {
                     
                     VStack(spacing: 10) {
                         Button(action: {
+                            showRoundsPicker = false
+                            showLengthPicker = false
                             showBreakPicker.toggle()
                         }) {
                                 Text("\(formatTime(breakTotalSeconds)) breaks")
@@ -134,14 +140,14 @@ struct ContentView: View {
                         }.buttonStyle(.glass)
                         
                         if showBreakPicker {
-                            HStack(spacing: 20) {
+                            HStack(spacing: 0) {
                                 Picker("Minutes", selection: $breakMinutes) {
                                     ForEach(0...1, id: \.self) { minute in
                                         Text("\(minute)m").tag(minute)
                                     }
                                 }
                                 .pickerStyle(WheelPickerStyle())
-                                .frame(height: 120)
+                                .frame(width: 100, height: 120)
                                 .onChange(of: breakMinutes) { _, newValue in
                                     if newValue == 1 {
                                         breakSecondsOnly = 0
@@ -154,7 +160,7 @@ struct ContentView: View {
                                     }
                                 }
                                 .pickerStyle(WheelPickerStyle())
-                                .frame(height: 120)
+                                .frame(width: 100, height: 120)
                             }
                         }
                     }
