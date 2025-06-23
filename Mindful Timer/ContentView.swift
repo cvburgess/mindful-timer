@@ -13,11 +13,21 @@ struct ContentView: View {
     @State private var showTimer = false
     @State private var showSettings = false
     @State private var rounds: Int = 5
-    @State private var lengthSeconds: Int = 300
-    @State private var breakSeconds: Int = 30
+    @State private var lengthMinutes: Int = 5
+    @State private var lengthSecondsOnly: Int = 0
+    @State private var breakMinutes: Int = 0
+    @State private var breakSecondsOnly: Int = 30
     @State private var showRoundsPicker = false
     @State private var showLengthPicker = false
     @State private var showBreakPicker = false
+    
+    private var lengthTotalSeconds: Int {
+        lengthMinutes * 60 + lengthSecondsOnly
+    }
+    
+    private var breakTotalSeconds: Int {
+        breakMinutes * 60 + breakSecondsOnly
+    }
     
     private func formatTime(_ totalSeconds: Int) -> String {
         let minutes = totalSeconds / 60
@@ -57,13 +67,8 @@ struct ContentView: View {
                         Button(action: {
                             showRoundsPicker.toggle()
                         }) {
-                            HStack {
                                 Text(formatRounds(rounds))
                                     .foregroundColor(.primary)
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .cornerRadius(8)
                         }
                         
                         if showRoundsPicker {
@@ -82,23 +87,40 @@ struct ContentView: View {
                         Button(action: {
                             showLengthPicker.toggle()
                         }) {
-                            HStack {
-                                Text("Length: \(formatTime(lengthSeconds))")
+                                Text("Length: \(formatTime(lengthTotalSeconds))")
                                     .foregroundColor(.primary)
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .cornerRadius(8)
                         }
                         
                         if showLengthPicker {
-                            Picker("Length", selection: $lengthSeconds) {
-                                ForEach(1...600, id: \.self) { totalSeconds in
-                                    Text(formatTime(totalSeconds)).tag(totalSeconds)
+                            HStack(spacing: 20) {
+                                Picker("Minutes", selection: $lengthMinutes) {
+                                    ForEach(0...10, id: \.self) { minute in
+                                        Text("\(minute)m").tag(minute)
+                                    }
+                                }
+                                .pickerStyle(WheelPickerStyle())
+                                .frame(height: 120)
+                                .onChange(of: lengthMinutes) { _, newValue in
+                                    if newValue == 0 && lengthSecondsOnly == 0 {
+                                        lengthSecondsOnly = 1
+                                    } else if newValue == 10 {
+                                        lengthSecondsOnly = 0
+                                    }
+                                }
+                                
+                                Picker("Seconds", selection: $lengthSecondsOnly) {
+                                    ForEach(0...(lengthMinutes == 10 ? 0 : 59), id: \.self) { second in
+                                        Text("\(second)s").tag(second)
+                                    }
+                                }
+                                .pickerStyle(WheelPickerStyle())
+                                .frame(height: 120)
+                                .onChange(of: lengthSecondsOnly) { _, newValue in
+                                    if lengthMinutes == 0 && newValue == 0 {
+                                        lengthSecondsOnly = 1
+                                    }
                                 }
                             }
-                            .pickerStyle(WheelPickerStyle())
-                            .frame(height: 120)
                         }
                     }
                     
@@ -106,23 +128,33 @@ struct ContentView: View {
                         Button(action: {
                             showBreakPicker.toggle()
                         }) {
-                            HStack {
-                                Text("Break: \(formatTime(breakSeconds))")
+                                Text("Break: \(formatTime(breakTotalSeconds))")
                                     .foregroundColor(.primary)
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .cornerRadius(8)
                         }
                         
                         if showBreakPicker {
-                            Picker("Break", selection: $breakSeconds) {
-                                ForEach(0...60, id: \.self) { totalSeconds in
-                                    Text(formatTime(totalSeconds)).tag(totalSeconds)
+                            HStack(spacing: 20) {
+                                Picker("Minutes", selection: $breakMinutes) {
+                                    ForEach(0...1, id: \.self) { minute in
+                                        Text("\(minute)m").tag(minute)
+                                    }
                                 }
+                                .pickerStyle(WheelPickerStyle())
+                                .frame(height: 120)
+                                .onChange(of: breakMinutes) { _, newValue in
+                                    if newValue == 1 {
+                                        breakSecondsOnly = 0
+                                    }
+                                }
+                                
+                                Picker("Seconds", selection: $breakSecondsOnly) {
+                                    ForEach(0...(breakMinutes == 1 ? 0 : 59), id: \.self) { second in
+                                        Text("\(second)s").tag(second)
+                                    }
+                                }
+                                .pickerStyle(WheelPickerStyle())
+                                .frame(height: 120)
                             }
-                            .pickerStyle(WheelPickerStyle())
-                            .frame(height: 120)
                         }
                     }
                 }
