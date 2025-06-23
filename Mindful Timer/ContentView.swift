@@ -57,10 +57,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {
-                Text("Mindful Timer")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding()
                 
                 Spacer()
                 
@@ -71,6 +67,7 @@ struct ContentView: View {
                         }) {
                                 Text(formatRounds(rounds))
                                 .foregroundColor(.primary).padding(10)
+                                .frame(width: 200)
                         }.buttonStyle(.glass)
                         
                         if showRoundsPicker {
@@ -89,8 +86,9 @@ struct ContentView: View {
                         Button(action: {
                             showLengthPicker.toggle()
                         }) {
-                                Text("\(formatTime(lengthTotalSeconds)) long")
+                                Text("\(formatTime(lengthTotalSeconds)) each")
                                 .foregroundColor(.primary).padding(10)
+                                .frame(width: 200)
                         }.buttonStyle(.glass)
                         
                         if showLengthPicker {
@@ -132,6 +130,7 @@ struct ContentView: View {
                         }) {
                                 Text("\(formatTime(breakTotalSeconds)) breaks")
                                 .foregroundColor(.primary).padding(10)
+                                .frame(width: 200)
                         }.buttonStyle(.glass)
                         
                         if showBreakPicker {
