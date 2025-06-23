@@ -8,6 +8,48 @@
 import SwiftUI
 import SwiftData
 
+struct TimePicker: View {
+    @Binding var minutes: Int
+    @Binding var seconds: Int
+    let maxMinutes: Int
+    let preventZeroTime: Bool
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            Picker("Minutes", selection: $minutes) {
+                ForEach(0...maxMinutes, id: \.self) { minute in
+                    Text("\(minute)m").tag(minute)
+                }
+            }
+            .pickerStyle(WheelPickerStyle())
+            .frame(width: 100, height: 120)
+            .onChange(of: minutes) { _, newValue in
+                if preventZeroTime && newValue == 0 && seconds == 0 {
+                    seconds = 1
+                } else if newValue == maxMinutes && maxMinutes == 10 {
+                    seconds = 0
+                } else if newValue == maxMinutes && maxMinutes == 1 {
+                    seconds = 0
+                }
+            }
+            
+            Picker("Seconds", selection: $seconds) {
+                let maxSeconds = (minutes == maxMinutes && (maxMinutes == 10 || maxMinutes == 1)) ? 0 : 59
+                ForEach(0...maxSeconds, id: \.self) { second in
+                    Text("\(second)s").tag(second)
+                }
+            }
+            .pickerStyle(WheelPickerStyle())
+            .frame(width: 100, height: 120)
+            .onChange(of: seconds) { _, newValue in
+                if preventZeroTime && minutes == 0 && newValue == 0 {
+                    seconds = 1
+                }
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showTimer = false
@@ -80,7 +122,7 @@ struct ContentView: View {
                                 }
                             }
                             .pickerStyle(WheelPickerStyle())
-                            .frame(height: 120)
+                            .frame(width: 200, height: 120)
                         }
                     }
                     
@@ -96,35 +138,12 @@ struct ContentView: View {
                         }.buttonStyle(.glass)
                         
                         if showLengthPicker {
-                            HStack(spacing: 0) {
-                                Picker("Minutes", selection: $lengthMinutes) {
-                                    ForEach(0...10, id: \.self) { minute in
-                                        Text("\(minute)m").tag(minute)
-                                    }
-                                }
-                                .pickerStyle(WheelPickerStyle())
-                                .frame(width: 100, height: 120)
-                                .onChange(of: lengthMinutes) { _, newValue in
-                                    if newValue == 0 && lengthSecondsOnly == 0 {
-                                        lengthSecondsOnly = 1
-                                    } else if newValue == 10 {
-                                        lengthSecondsOnly = 0
-                                    }
-                                }
-                                
-                                Picker("Seconds", selection: $lengthSecondsOnly) {
-                                    ForEach(0...(lengthMinutes == 10 ? 0 : 59), id: \.self) { second in
-                                        Text("\(second)s").tag(second)
-                                    }
-                                }
-                                .pickerStyle(WheelPickerStyle())
-                                .frame(width: 100, height: 120)
-                                .onChange(of: lengthSecondsOnly) { _, newValue in
-                                    if lengthMinutes == 0 && newValue == 0 {
-                                        lengthSecondsOnly = 1
-                                    }
-                                }
-                            }
+                            TimePicker(
+                                minutes: $lengthMinutes,
+                                seconds: $lengthSecondsOnly,
+                                maxMinutes: 10,
+                                preventZeroTime: true
+                            )
                         }
                     }
                     
@@ -140,28 +159,12 @@ struct ContentView: View {
                         }.buttonStyle(.glass)
                         
                         if showBreakPicker {
-                            HStack(spacing: 0) {
-                                Picker("Minutes", selection: $breakMinutes) {
-                                    ForEach(0...1, id: \.self) { minute in
-                                        Text("\(minute)m").tag(minute)
-                                    }
-                                }
-                                .pickerStyle(WheelPickerStyle())
-                                .frame(width: 100, height: 120)
-                                .onChange(of: breakMinutes) { _, newValue in
-                                    if newValue == 1 {
-                                        breakSecondsOnly = 0
-                                    }
-                                }
-                                
-                                Picker("Seconds", selection: $breakSecondsOnly) {
-                                    ForEach(0...(breakMinutes == 1 ? 0 : 59), id: \.self) { second in
-                                        Text("\(second)s").tag(second)
-                                    }
-                                }
-                                .pickerStyle(WheelPickerStyle())
-                                .frame(width: 100, height: 120)
-                            }
+                            TimePicker(
+                                minutes: $breakMinutes,
+                                seconds: $breakSecondsOnly,
+                                maxMinutes: 1,
+                                preventZeroTime: false
+                            )
                         }
                     }
                 }
