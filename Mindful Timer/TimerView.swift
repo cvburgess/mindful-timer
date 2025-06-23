@@ -191,10 +191,10 @@ struct TimerView: View {
     private func startTimer() {
         isRunning = true
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            if timeRemaining > 0 {
-                timeRemaining -= 1
-                updateProgress()
-            } else {
+            timeRemaining -= 1
+            updateProgress()
+            
+            if timeRemaining <= 0 {
                 completeCurrentSession()
             }
         }
