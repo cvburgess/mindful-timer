@@ -30,25 +30,26 @@ struct ContentView: View {
                     HStack {
                         Text("Rounds:")
                             .frame(width: 80, alignment: .leading)
-                        Stepper(value: $rounds, in: 0...100) {
-                            HStack {
-                                Text(rounds == 0 ? "∞" : "\(rounds)")
-                                    .font(.system(.body, design: .monospaced))
-                                    .frame(minWidth: 30, alignment: .leading)
-                                Spacer()
+                        Picker("Rounds", selection: $rounds) {
+                            Text("∞").tag(0)
+                            ForEach(1...100, id: \.self) { round in
+                                Text("\(round)").tag(round)
                             }
                         }
+                        .pickerStyle(.menu)
+                        Spacer()
                     }
                     
                     HStack {
                         Text("Length:")
                             .frame(width: 80, alignment: .leading)
                         HStack {
-                            Stepper(value: $lengthMinutes, in: 0...10) {
-                                Text("\(lengthMinutes)m")
-                                    .font(.system(.body, design: .monospaced))
-                                    .frame(minWidth: 30, alignment: .leading)
+                            Picker("Minutes", selection: $lengthMinutes) {
+                                ForEach(0...10, id: \.self) { minute in
+                                    Text("\(minute)m").tag(minute)
+                                }
                             }
+                            .pickerStyle(.menu)
                             .onChange(of: lengthMinutes) { _, newValue in
                                 if newValue == 0 && lengthSeconds == 0 {
                                     lengthSeconds = 1
@@ -57,11 +58,12 @@ struct ContentView: View {
                                 }
                             }
                             
-                            Stepper(value: $lengthSeconds, in: 0...(lengthMinutes == 10 ? 0 : 59)) {
-                                Text("\(lengthSeconds)s")
-                                    .font(.system(.body, design: .monospaced))
-                                    .frame(minWidth: 30, alignment: .leading)
+                            Picker("Seconds", selection: $lengthSeconds) {
+                                ForEach(0...(lengthMinutes == 10 ? 0 : 59), id: \.self) { second in
+                                    Text("\(second)s").tag(second)
+                                }
                             }
+                            .pickerStyle(.menu)
                             .onChange(of: lengthSeconds) { _, newValue in
                                 if lengthMinutes == 0 && newValue == 0 {
                                     lengthSeconds = 1
@@ -75,22 +77,24 @@ struct ContentView: View {
                         Text("Break:")
                             .frame(width: 80, alignment: .leading)
                         HStack {
-                            Stepper(value: $breakMinutes, in: 0...1) {
-                                Text("\(breakMinutes)m")
-                                    .font(.system(.body, design: .monospaced))
-                                    .frame(minWidth: 30, alignment: .leading)
+                            Picker("Minutes", selection: $breakMinutes) {
+                                ForEach(0...1, id: \.self) { minute in
+                                    Text("\(minute)m").tag(minute)
+                                }
                             }
+                            .pickerStyle(.menu)
                             .onChange(of: breakMinutes) { _, newValue in
                                 if newValue == 1 {
                                     breakSeconds = 0
                                 }
                             }
                             
-                            Stepper(value: $breakSeconds, in: 0...(breakMinutes == 1 ? 0 : 59)) {
-                                Text("\(breakSeconds)s")
-                                    .font(.system(.body, design: .monospaced))
-                                    .frame(minWidth: 30, alignment: .leading)
+                            Picker("Seconds", selection: $breakSeconds) {
+                                ForEach(0...(breakMinutes == 1 ? 0 : 59), id: \.self) { second in
+                                    Text("\(second)s").tag(second)
+                                }
                             }
+                            .pickerStyle(.menu)
                         }
                         Spacer()
                     }
