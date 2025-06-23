@@ -15,6 +15,7 @@ struct ContentView: View {
     @State private var rounds: Int = 5
     @State private var lengthSeconds: Int = 300
     @State private var breakSeconds: Int = 30
+    @State private var showRoundsPicker = false
     @State private var showLengthPicker = false
     @State private var showBreakPicker = false
     
@@ -30,6 +31,16 @@ struct ContentView: View {
             return "\(seconds)s"
         }
     }
+    
+    private func formatRounds(_ rounds: Int) -> String {
+        if rounds == 0 {
+            return "Infinite rounds"
+        } else if rounds == 1 {
+            return "1 round"
+        } else {
+            return "\(rounds) rounds"
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -42,16 +53,29 @@ struct ContentView: View {
                 Spacer()
                 
                 VStack(spacing: 20) {
-                    HStack {
-                        Text("Rounds:")
-                            .frame(width: 80, alignment: .leading)
-                        Picker("Rounds", selection: $rounds) {
-                            Text("∞").tag(0)
-                            ForEach(1...100, id: \.self) { round in
-                                Text("\(round)").tag(round)
+                    VStack(spacing: 10) {
+                        Button(action: {
+                            showRoundsPicker.toggle()
+                        }) {
+                            HStack {
+                                Text(formatRounds(rounds))
+                                    .foregroundColor(.primary)
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .cornerRadius(8)
                         }
-                        .pickerStyle(.menu)
+                        
+                        if showRoundsPicker {
+                            Picker("Rounds", selection: $rounds) {
+                                Text("∞").tag(0)
+                                ForEach(1...100, id: \.self) { round in
+                                    Text("\(round)").tag(round)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(height: 120)
+                        }
                     }
                     
                     VStack(spacing: 10) {
