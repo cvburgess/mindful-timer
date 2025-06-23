@@ -179,10 +179,8 @@ struct ContentView: View {
                         Image(systemName: "gearshape.fill")
                             .font(.system(size: 30))
                             .frame(width: 80, height: 80)
-                            .background(Color.gray)
-                            .foregroundColor(.white)
                             .clipShape(Circle())
-                    }
+                    }.buttonStyle(.glass)
                     
                     Button(action: {
                         showTimer = true
@@ -190,15 +188,17 @@ struct ContentView: View {
                         Image(systemName: "play.fill")
                             .font(.system(size: 30))
                             .frame(width: 80, height: 80)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
+                            .foregroundColor(.blue)
                             .clipShape(Circle())
-                    }
+                    }.buttonStyle(.glass)
                     
                 }
             }
             .navigationTitle("")
             .navigationBarHidden(true)
+            
+            Spacer()
+
         }
         .fullScreenCover(isPresented: $showTimer) {
             TimerView()

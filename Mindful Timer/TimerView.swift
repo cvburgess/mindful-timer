@@ -24,10 +24,9 @@ struct TimerView: View {
                     Image(systemName: isPaused ? "play.fill" : "pause.fill")
                         .font(.system(size: 30))
                         .frame(width: 80, height: 80)
-                        .background(Color.orange)
-                        .foregroundColor(.white)
+                        .foregroundColor(.orange)
                         .clipShape(Circle())
-                }
+                }.buttonStyle(.glass)
                 
                 Button(action: {
                     dismiss()
@@ -35,10 +34,9 @@ struct TimerView: View {
                     Image(systemName: "stop.fill")
                         .font(.system(size: 30))
                         .frame(width: 80, height: 80)
-                        .background(Color.red)
-                        .foregroundColor(.white)
+                        .foregroundColor(.red)
                         .clipShape(Circle())
-                }
+                }.buttonStyle(.glass)
             }
         }
         .padding()
