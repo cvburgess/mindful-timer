@@ -41,7 +41,7 @@ struct SegmentedRadialProgressView: View {
                         style: StrokeStyle(lineWidth: 20, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
-                    .animation(.easeInOut(duration: 0.3), value: progress)
+                    .animation(.linear(duration: 1.0), value: progress)
             } else {
                 // Segmented progress for finite rounds
                 Circle()
@@ -51,7 +51,7 @@ struct SegmentedRadialProgressView: View {
                         style: StrokeStyle(lineWidth: 12, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
-                    .animation(.easeInOut(duration: 0.3), value: progress)
+                    .animation(.linear(duration: 1.0), value: progress)
                 
                 // Segment dividers
                 ForEach(0..<rounds, id: \.self) { index in
