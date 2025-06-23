@@ -37,8 +37,10 @@ struct ContentView: View {
             return "\(minutes)m \(seconds)s"
         } else if minutes > 0 {
             return "\(minutes)m"
-        } else {
+        } else if seconds > 0{
             return "\(seconds)s"
+        } else {
+            return "no"
         }
     }
     
@@ -68,8 +70,8 @@ struct ContentView: View {
                             showRoundsPicker.toggle()
                         }) {
                                 Text(formatRounds(rounds))
-                                    .foregroundColor(.primary)
-                        }
+                                .foregroundColor(.primary).padding(10)
+                        }.buttonStyle(.glass)
                         
                         if showRoundsPicker {
                             Picker("Rounds", selection: $rounds) {
@@ -87,9 +89,9 @@ struct ContentView: View {
                         Button(action: {
                             showLengthPicker.toggle()
                         }) {
-                                Text("Length: \(formatTime(lengthTotalSeconds))")
-                                    .foregroundColor(.primary)
-                        }
+                                Text("\(formatTime(lengthTotalSeconds)) long")
+                                .foregroundColor(.primary).padding(10)
+                        }.buttonStyle(.glass)
                         
                         if showLengthPicker {
                             HStack(spacing: 20) {
@@ -128,9 +130,9 @@ struct ContentView: View {
                         Button(action: {
                             showBreakPicker.toggle()
                         }) {
-                                Text("Break: \(formatTime(breakTotalSeconds))")
-                                    .foregroundColor(.primary)
-                        }
+                                Text("\(formatTime(breakTotalSeconds)) breaks")
+                                .foregroundColor(.primary).padding(10)
+                        }.buttonStyle(.glass)
                         
                         if showBreakPicker {
                             HStack(spacing: 20) {
