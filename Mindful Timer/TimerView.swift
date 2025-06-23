@@ -44,24 +44,14 @@ struct SegmentedRadialProgressView: View {
                     .animation(.easeInOut(duration: 0.3), value: progress)
             } else {
                 // Segmented progress for finite rounds
-                ForEach(0..<rounds, id: \.self) { index in
-                    let isCompleted = index < currentRound - 1
-                    let isCurrent = index == currentRound - 1
-                    let segmentProgress = isCurrent ? progress : (isCompleted ? 1.0 : 0.0)
-                    
-                    Circle()
-                        .trim(
-                            from: Double(index) / Double(rounds),
-                            to: Double(index) / Double(rounds) + (segmentProgress / Double(rounds))
-                        )
-                        .stroke(
-                            isCompleted ? Color.green :
-                            isCurrent ? Color.blue : Color.clear,
-                            style: StrokeStyle(lineWidth: 12, lineCap: .round)
-                        )
-                        .rotationEffect(.degrees(-90))
-                        .animation(.easeInOut(duration: 0.3), value: segmentProgress)
-                }
+                Circle()
+                    .trim(from: 0, to: progress)
+                    .stroke(
+                        Color.blue,
+                        style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeInOut(duration: 0.3), value: progress)
                 
                 // Segment dividers
                 ForEach(0..<rounds, id: \.self) { index in
