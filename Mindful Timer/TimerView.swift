@@ -11,6 +11,8 @@ struct SegmentedRadialProgressView: View {
     let rounds: Int
     let currentRound: Int
     let progress: Double
+    let timeRemaining: Int
+    let isCompleted: Bool
     
     private var isInfiniteMode: Bool {
         rounds == 0
@@ -67,58 +69,98 @@ struct SegmentedRadialProgressView: View {
                         .fill(Color.primary)
                         .frame(width: 2, height: 20)
                         .offset(y: -100)
-                        .rotationEffect(.degrees(Double(index) * segmentAngle - 90))
+                        .rotationEffect(.degrees(Double(index) * segmentAngle))
                 }
             }
             
-            // Center text
-            HStack(alignment: .lastTextBaseline) {
-                if isInfiniteMode {
-                    Text("∞")
-                        .font(.system(size: 40, weight: .bold))
-                        .foregroundColor(.primary)
-                } else {
-                    Text("\(currentRound)")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.primary)
-                    Text("/ \(rounds)")
+            VStack {
+                Text(formatTime(timeRemaining))
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.primary)
+                if !isInfiniteMode {
+                    Text("\(currentRound) / \(rounds)")
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.secondary)
                 }
             }
+            
         }
+    }
+    
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
     }
 }
 
 struct TimerView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isPaused = false
+    @State private var isRunning = false
     
     let rounds: Int
     let lengthSeconds: Int
     let breakSeconds: Int
     @State private var currentRound = 1
     @State private var progress: Double = 0.0
+    @State private var timeRemaining: Int = 0
+    @State private var isBreak = false
+    @State private var isCompleted = false
+    @State private var timer: Timer?
+    
+    private var isInfiniteMode: Bool {
+        rounds == 0
+    }
+    
+    private var totalRounds: Int {
+        isInfiniteMode ? 1 : rounds
+    }
+    
+    private var currentSessionLength: Int {
+        isBreak ? breakSeconds : lengthSeconds
+    }
+    
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
     
     var body: some View {
         VStack(spacing: 40) {
             
             Spacer()
             
-            SegmentedRadialProgressView(
-                rounds: rounds,
-                currentRound: currentRound,
-                progress: progress
-            )
-            .frame(width: 200, height: 200)
+            if isCompleted {
+                VStack {
+                    Text("Done!")
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundColor(.green)
+                }
+                .frame(width: 200, height: 200)
+            } else {
+                SegmentedRadialProgressView(
+                    rounds: rounds,
+                    currentRound: currentRound,
+                    progress: progress,
+                    timeRemaining: timeRemaining,
+                    isCompleted: isCompleted
+                )
+                .frame(width: 200, height: 200)
+            }
                 
             Spacer()
             
             HStack(spacing: 30) {
                 Button(action: {
-                    isPaused.toggle()
+                    if isRunning {
+                        pauseTimer()
+                    } else {
+                        startTimer()
+                    }
                 }) {
-                    Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                    Image(systemName: isRunning ? "pause.fill" : "play.fill")
                         .font(.system(size: 30))
                         .frame(width: 80, height: 80)
                         .foregroundColor(.orange)
@@ -139,6 +181,105 @@ struct TimerView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
+        .onAppear {
+            setupInitialTimer()
+        }
+        .onDisappear {
+            stopTimer()
+        }
+    }
+    
+    private func setupInitialTimer() {
+        timeRemaining = lengthSeconds
+        currentRound = 1
+        progress = 0.0
+        isBreak = false
+        isCompleted = false
+    }
+    
+    private func startTimer() {
+        isRunning = true
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if timeRemaining > 0 {
+                timeRemaining -= 1
+                updateProgress()
+            } else {
+                completeCurrentSession()
+            }
+        }
+    }
+    
+    private func pauseTimer() {
+        isRunning = false
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+        isRunning = false
+    }
+    
+    private func updateProgress() {
+        if isBreak {
+            // Don't update progress during breaks - keep current progress
+            return
+        }
+        
+        let roundProgress = Double(lengthSeconds - timeRemaining) / Double(lengthSeconds)
+        
+        if isInfiniteMode {
+            progress = roundProgress
+        } else {
+            let completedRounds = Double(currentRound - 1)
+            progress = (completedRounds + roundProgress) / Double(rounds)
+        }
+    }
+    
+    private func completeCurrentSession() {
+        if isBreak {
+            // Break completed, start next round
+            isBreak = false
+            timeRemaining = lengthSeconds
+            
+            if !isInfiniteMode {
+                currentRound += 1
+                if currentRound > rounds {
+                    // All rounds completed
+                    completeAllRounds()
+                    return
+                }
+            }
+        } else {
+            // Round completed
+            if breakSeconds > 0 && (!isInfiniteMode && currentRound < rounds) {
+                // Start break
+                isBreak = true
+                timeRemaining = breakSeconds
+            } else if !isInfiniteMode {
+                // No break, move to next round or complete
+                currentRound += 1
+                if currentRound > rounds {
+                    completeAllRounds()
+                    return
+                } else {
+                    timeRemaining = lengthSeconds
+                }
+            } else {
+                // Infinite mode, restart
+                timeRemaining = lengthSeconds
+                progress = 0.0
+            }
+        }
+        
+        updateProgress()
+    }
+    
+    private func completeAllRounds() {
+        stopTimer()
+        isCompleted = true
+        progress = 1.0
     }
 }
 
