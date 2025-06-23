@@ -24,7 +24,7 @@ struct SegmentedRadialProgressView: View {
         ZStack {
             // Background circle
             Circle()
-                .stroke(Color.gray.opacity(0.3), lineWidth: 12)
+                .stroke(Color.gray.opacity(0.3), lineWidth: 20)
             
             if isInfiniteMode {
                 // Continuous ring for infinite mode
@@ -36,7 +36,7 @@ struct SegmentedRadialProgressView: View {
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                        style: StrokeStyle(lineWidth: 20, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
                     .animation(.easeInOut(duration: 0.3), value: progress)
@@ -72,7 +72,7 @@ struct SegmentedRadialProgressView: View {
             }
             
             // Center text
-            HStack {
+            HStack(alignment: .lastTextBaseline) {
                 if isInfiniteMode {
                     Text("∞")
                         .font(.system(size: 40, weight: .bold))
@@ -102,6 +102,9 @@ struct TimerView: View {
     
     var body: some View {
         VStack(spacing: 40) {
+            
+            Spacer()
+            
             SegmentedRadialProgressView(
                 rounds: rounds,
                 currentRound: currentRound,
