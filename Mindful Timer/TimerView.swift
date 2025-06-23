@@ -13,10 +13,8 @@ struct TimerView: View {
     
     var body: some View {
         VStack(spacing: 40) {
-            Text("Timer")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
+            // TODO: Replace this with a segmented radial progress bar
+                
             Spacer()
             
             HStack(spacing: 30) {
@@ -42,8 +40,6 @@ struct TimerView: View {
                         .clipShape(Circle())
                 }
             }
-            
-            Spacer()
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)

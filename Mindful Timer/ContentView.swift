@@ -19,8 +19,22 @@ struct ContentView: View {
                 Text("Mindful Timer")
                     .font(.largeTitle)
                     .fontWeight(.bold)
+                    .padding()
                 
-                VStack(spacing: 20) {
+                Spacer()
+                
+                HStack(spacing: 30) {
+                    Button(action: {
+                        showSettings = true
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 30))
+                            .frame(width: 80, height: 80)
+                            .background(Color.gray)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                    }
+                    
                     Button(action: {
                         showTimer = true
                     }) {
@@ -32,16 +46,6 @@ struct ContentView: View {
                             .clipShape(Circle())
                     }
                     
-                    Button(action: {
-                        showSettings = true
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 30))
-                            .frame(width: 80, height: 80)
-                            .background(Color.gray)
-                            .foregroundColor(.white)
-                            .clipShape(Circle())
-                    }
                 }
             }
             .navigationTitle("")
