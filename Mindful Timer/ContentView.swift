@@ -201,7 +201,11 @@ struct ContentView: View {
 
         }
         .fullScreenCover(isPresented: $showTimer) {
-            TimerView()
+            TimerView(
+                rounds: rounds,
+                lengthSeconds: lengthTotalSeconds,
+                breakSeconds: breakTotalSeconds
+            )
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
