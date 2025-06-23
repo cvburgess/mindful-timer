@@ -24,9 +24,29 @@ struct SegmentedRadialProgressView: View {
     
     var body: some View {
         ZStack {
-            // Background circle
-            Circle()
-                .stroke(Color.gray.opacity(0.3), lineWidth: 20)
+            // Background wedges
+            if !isInfiniteMode {
+                ForEach(0..<rounds, id: \.self) { index in
+                    let spacingRatio = 0.15 // 15% spacing between wedges
+                    let wedgeSize = (1.0 / Double(rounds)) * (1.0 - spacingRatio)
+                    let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
+                    
+                    Circle()
+                        .trim(
+                            from: wedgeStart,
+                            to: wedgeStart + wedgeSize
+                        )
+                        .stroke(
+                            Color.gray.opacity(0.3),
+                            style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                        )
+                        .rotationEffect(.degrees(-90))
+                }
+            } else {
+                // Background circle for infinite mode
+                Circle()
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 20)
+            }
             
             if isInfiniteMode {
                 // Continuous ring for infinite mode
@@ -43,23 +63,27 @@ struct SegmentedRadialProgressView: View {
                     .rotationEffect(.degrees(-90))
                     .animation(.linear(duration: 1.0), value: progress)
             } else {
-                // Segmented progress for finite rounds
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(
-                        Color.blue,
-                        style: StrokeStyle(lineWidth: 12, lineCap: .round)
-                    )
-                    .rotationEffect(.degrees(-90))
-                    .animation(.linear(duration: 1.0), value: progress)
-                
-                // Segment dividers
+                // Individual wedges for each round with spacing
                 ForEach(0..<rounds, id: \.self) { index in
-                    Rectangle()
-                        .fill(Color.primary)
-                        .frame(width: 2, height: 20)
-                        .offset(y: -100)
-                        .rotationEffect(.degrees(Double(index) * segmentAngle))
+                    let isCompleted = index < currentRound - 1
+                    let isCurrent = index == currentRound - 1
+                    let segmentProgress = isCurrent ? (progress - Double(index) / Double(rounds)) * Double(rounds) : (isCompleted ? 1.0 : 0.0)
+                    
+                    let spacingRatio = 0.15 // 15% spacing between wedges
+                    let wedgeSize = (1.0 / Double(rounds)) * (1.0 - spacingRatio)
+                    let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
+                    
+                    Circle()
+                        .trim(
+                            from: wedgeStart,
+                            to: wedgeStart + (segmentProgress * wedgeSize)
+                        )
+                        .stroke(
+                            Color.blue,
+                            style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                        )
+                        .rotationEffect(.degrees(-90))
+                        .animation(.linear(duration: 1.0), value: segmentProgress)
                 }
             }
             
