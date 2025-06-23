@@ -183,6 +183,7 @@ struct TimerView: View {
         .background(Color(.systemBackground))
         .onAppear {
             setupInitialTimer()
+            startTimer()
         }
         .onDisappear {
             stopTimer()
