@@ -55,10 +55,10 @@ struct ContentView: View {
     @State private var showTimer = false
     @State private var showSettings = false
     @State private var rounds: Int = 5
-    @State private var lengthMinutes: Int = 5
-    @State private var lengthSecondsOnly: Int = 0
+    @State private var lengthMinutes: Int = 0
+    @State private var lengthSecondsOnly: Int = 30
     @State private var breakMinutes: Int = 0
-    @State private var breakSecondsOnly: Int = 30
+    @State private var breakSecondsOnly: Int = 3
     @State private var showRoundsPicker = false
     @State private var showLengthPicker = false
     @State private var showBreakPicker = false
