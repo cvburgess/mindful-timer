@@ -15,6 +15,8 @@ struct ContentView: View {
     @State private var rounds: Int = 5
     @State private var lengthSeconds: Int = 300
     @State private var breakSeconds: Int = 30
+    @State private var showLengthPicker = false
+    @State private var showBreakPicker = false
     
     private func formatTime(_ totalSeconds: Int) -> String {
         let minutes = totalSeconds / 60
@@ -37,6 +39,8 @@ struct ContentView: View {
                     .fontWeight(.bold)
                     .padding()
                 
+                Spacer()
+                
                 VStack(spacing: 20) {
                     HStack {
                         Text("Rounds:")
@@ -48,31 +52,54 @@ struct ContentView: View {
                             }
                         }
                         .pickerStyle(.menu)
-                        Spacer()
                     }
                     
-                    HStack {
-                        Text("Length:")
-                            .frame(width: 80, alignment: .leading)
-                        Picker("Length", selection: $lengthSeconds) {
-                            ForEach(1...600, id: \.self) { totalSeconds in
-                                Text(formatTime(totalSeconds)).tag(totalSeconds)
+                    VStack(spacing: 10) {
+                        Button(action: {
+                            showLengthPicker.toggle()
+                        }) {
+                            HStack {
+                                Text("Length: \(formatTime(lengthSeconds))")
+                                    .foregroundColor(.primary)
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .cornerRadius(8)
                         }
-                        .pickerStyle(.menu)
-                        Spacer()
+                        
+                        if showLengthPicker {
+                            Picker("Length", selection: $lengthSeconds) {
+                                ForEach(1...600, id: \.self) { totalSeconds in
+                                    Text(formatTime(totalSeconds)).tag(totalSeconds)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(height: 120)
+                        }
                     }
                     
-                    HStack {
-                        Text("Break:")
-                            .frame(width: 80, alignment: .leading)
-                        Picker("Break", selection: $breakSeconds) {
-                            ForEach(0...60, id: \.self) { totalSeconds in
-                                Text(formatTime(totalSeconds)).tag(totalSeconds)
+                    VStack(spacing: 10) {
+                        Button(action: {
+                            showBreakPicker.toggle()
+                        }) {
+                            HStack {
+                                Text("Break: \(formatTime(breakSeconds))")
+                                    .foregroundColor(.primary)
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .cornerRadius(8)
                         }
-                        .pickerStyle(.menu)
-                        Spacer()
+                        
+                        if showBreakPicker {
+                            Picker("Break", selection: $breakSeconds) {
+                                ForEach(0...60, id: \.self) { totalSeconds in
+                                    Text(formatTime(totalSeconds)).tag(totalSeconds)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(height: 120)
+                        }
                     }
                 }
                 .padding(.horizontal, 20)
