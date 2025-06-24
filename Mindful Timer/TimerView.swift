@@ -13,24 +13,51 @@ struct SegmentedRadialProgressView: View {
   let progress: Double
   let timeRemaining: Int
   let isCompleted: Bool
-  let spacingRatio: Double = 0.2
+  let strokeWidth: CGFloat = 12
 
   private var isInfiniteMode: Bool {
     rounds == 0
+  }
+
+  private var useDots: Bool {
+    !isInfiniteMode && rounds > 20
   }
 
   private var segmentAngle: Double {
     isInfiniteMode ? 0 : 360.0 / Double(rounds)
   }
 
+  private var spacingRatio: Double {
+    guard !isInfiniteMode else { return 0 }
+    return 0.04 * Double(rounds)
+  }
+
   private var wedgeSize: Double {
-    !isInfiniteMode ? (1.0 / Double(rounds)) * (1.0 - spacingRatio) : 0
+    guard !isInfiniteMode else { return 0 }
+    return (1.0 / Double(rounds)) * (1.0 - spacingRatio)
   }
 
   var body: some View {
     ZStack {
-      // Background wedges
-      if !isInfiniteMode {
+      if isInfiniteMode {
+        // Background circle for infinite mode
+        Circle()
+          .stroke(Color.secondary.opacity(0.3), lineWidth: 20)
+      } else if useDots {
+        // Background dots for many rounds
+        ForEach(0..<rounds, id: \.self) { index in
+          let angle = Double(index) * 360.0 / Double(rounds) - 90.0
+          let radius: CGFloat = 125
+          let x = cos(angle * .pi / 180) * radius
+          let y = sin(angle * .pi / 180) * radius
+
+          Circle()
+            .fill(Color.secondary.opacity(0.3))
+            .frame(width: strokeWidth, height: strokeWidth)
+            .offset(x: x, y: y)
+        }
+      } else {
+        // Background wedges for <= 10 rounds
         ForEach(0..<rounds, id: \.self) { index in
           let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
 
@@ -41,14 +68,10 @@ struct SegmentedRadialProgressView: View {
             )
             .stroke(
               Color.secondary.opacity(0.3),
-              style: StrokeStyle(lineWidth: 12, lineCap: .round)
+              style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
             )
             .rotationEffect(.degrees(-90))
         }
-      } else {
-        // Background circle for infinite mode
-        Circle()
-          .stroke(Color.secondary.opacity(0.3), lineWidth: 20)
       }
 
       if isInfiniteMode {
@@ -65,8 +88,26 @@ struct SegmentedRadialProgressView: View {
           )
           .rotationEffect(.degrees(-90))
           .animation(.linear(duration: 1.0), value: progress)
+      } else if useDots {
+        // Progress dots for many rounds
+        ForEach(0..<rounds, id: \.self) { index in
+          let angle = Double(index) * 360.0 / Double(rounds) - 90.0
+          let radius: CGFloat = 125
+          let x = cos(angle * .pi / 180) * radius
+          let y = sin(angle * .pi / 180) * radius
+
+          let isCompleted = index < currentRound - 1
+          let isCurrent = index == currentRound - 1
+          let dotColor: Color = isCompleted ? .blue : (isCurrent ? .orange : .clear)
+
+          Circle()
+            .fill(dotColor)
+            .frame(width: strokeWidth, height: strokeWidth)
+            .offset(x: x, y: y)
+            .animation(.linear(duration: 0.3), value: dotColor)
+        }
       } else {
-        // Individual wedges for each round with spacing
+        // Individual wedges for each round with spacing (<= 10 rounds)
         ForEach(0..<rounds, id: \.self) { index in
           let isCompleted = index < currentRound - 1
           let isCurrent = index == currentRound - 1
@@ -84,7 +125,7 @@ struct SegmentedRadialProgressView: View {
             )
             .stroke(
               Color.blue,
-              style: StrokeStyle(lineWidth: 12, lineCap: .round)
+              style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
             )
             .rotationEffect(.degrees(-90))
             .animation(.linear(duration: 1.0), value: segmentProgress)
@@ -308,5 +349,5 @@ struct TimerView: View {
 }
 
 #Preview {
-  TimerView(rounds: 5, lengthSeconds: 300, breakSeconds: 30)
+  TimerView(rounds: 21, lengthSeconds: 5, breakSeconds: 0)
 }
