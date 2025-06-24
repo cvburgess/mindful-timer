@@ -101,7 +101,7 @@ struct TimerConfigurationView: View {
 
       Spacer()
 
-      VStack(spacing: 20) {
+      VStack(spacing: 30) {
         VStack(spacing: 10) {
           Button(action: {
             showLengthPicker = false
