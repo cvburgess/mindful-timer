@@ -167,6 +167,7 @@ struct TimerView: View {
   @AppStorage("vibrationEnabled") private var vibrationEnabled = true
   @AppStorage("roundStartSound") private var roundStartSound = "bowl"
   @AppStorage("breakStartSound") private var breakStartSound = "bell"
+  @AppStorage("sessionEndSound") private var sessionEndSound = "bell"
   @State private var currentRound = 1
   @State private var progress: Double = 0.0
   @State private var timeRemaining: Int = 0
@@ -466,16 +467,8 @@ struct TimerView: View {
       }
     }
 
-    // Triple sound effect for completion
-    playSound(breakStartSound)
-
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-      playSound(breakStartSound)
-    }
-
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-      playSound(breakStartSound)
-    }
+    // Session end sound
+    playSound(sessionEndSound)
 
     // Start fade out sequence
     // Timer text fades after 1s delay

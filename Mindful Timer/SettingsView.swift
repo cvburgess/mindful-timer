@@ -12,6 +12,7 @@ struct SettingsView: View {
   @AppStorage("vibrationEnabled") private var vibrationEnabled = true
   @AppStorage("roundStartSound") private var roundStartSound = "ding"
   @AppStorage("breakStartSound") private var breakStartSound = "none"
+  @AppStorage("sessionEndSound") private var sessionEndSound = "bowl"
 
   private let soundOptions = ["none", "bell", "bowl", "ding", "gong"]
 
@@ -28,6 +29,12 @@ struct SettingsView: View {
           }
 
           Picker("Break Start", selection: $breakStartSound) {
+            ForEach(soundOptions, id: \.self) { sound in
+              Text(sound.capitalized).tag(sound)
+            }
+          }
+
+          Picker("Session End", selection: $sessionEndSound) {
             ForEach(soundOptions, id: \.self) { sound in
               Text(sound.capitalized).tag(sound)
             }
