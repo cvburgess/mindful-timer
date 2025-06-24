@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SegmentedRadialProgressView: View {
+  @Environment(\.colorScheme) private var colorScheme
   let rounds: Int
   let currentRound: Int
   let progress: Double
@@ -35,6 +36,10 @@ struct SegmentedRadialProgressView: View {
   private var wedgeSize: Double {
     guard !isInfiniteMode else { return 0 }
     return (1.0 / Double(rounds)) * (1.0 - spacingRatio)
+  }
+  
+  private var progressColor: Color {
+    colorScheme == .dark ? .blue : .pink
   }
 
   var body: some View {
@@ -79,11 +84,7 @@ struct SegmentedRadialProgressView: View {
         Circle()
           .trim(from: 0, to: progress)
           .stroke(
-            LinearGradient(
-              colors: [.blue, .purple],
-              startPoint: .topLeading,
-              endPoint: .bottomTrailing
-            ),
+            progressColor,
             style: StrokeStyle(lineWidth: 20, lineCap: .round)
           )
           .rotationEffect(.degrees(-90))
@@ -98,7 +99,7 @@ struct SegmentedRadialProgressView: View {
 
           let isCompleted = index < currentRound - 1
           let isCurrent = index == currentRound - 1
-          let dotColor: Color = isCompleted ? .blue : (isCurrent ? .orange : .clear)
+          let dotColor: Color = (isCompleted || isCurrent) ? progressColor : .clear
 
           Circle()
             .fill(dotColor)
@@ -124,7 +125,7 @@ struct SegmentedRadialProgressView: View {
               to: wedgeStart + (segmentProgress * wedgeSize)
             )
             .stroke(
-              Color.blue,
+              progressColor,
               style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
             )
             .rotationEffect(.degrees(-90))
