@@ -37,7 +37,7 @@ struct SegmentedRadialProgressView: View {
               to: wedgeStart + wedgeSize
             )
             .stroke(
-              Color.gray.opacity(0.3),
+              Color.secondary.opacity(0.3),
               style: StrokeStyle(lineWidth: 12, lineCap: .round)
             )
             .rotationEffect(.degrees(-90))
@@ -45,7 +45,7 @@ struct SegmentedRadialProgressView: View {
       } else {
         // Background circle for infinite mode
         Circle()
-          .stroke(Color.gray.opacity(0.3), lineWidth: 20)
+          .stroke(Color.secondary.opacity(0.3), lineWidth: 20)
       }
 
       if isInfiniteMode {
