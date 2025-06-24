@@ -171,7 +171,8 @@ struct TimerView: View {
   @Binding var lengthSeconds: Int
   @Binding var breakSeconds: Int
   @AppStorage("vibrationEnabled") private var vibrationEnabled = true
-  @AppStorage("soundEnabled") private var soundEnabled = true
+  @AppStorage("roundStartSound") private var roundStartSound = "bowl"
+  @AppStorage("breakStartSound") private var breakStartSound = "bell"
   @State private var currentRound = 1
   @State private var progress: Double = 0.0
   @State private var timeRemaining: Int = 0
@@ -200,11 +201,11 @@ struct TimerView: View {
     return String(format: "%d:%02d", minutes, remainingSeconds)
   }
   
-  private func playSound() {
-    guard soundEnabled else { return }
+  private func playSound(_ soundName: String) {
+    guard soundName != "none" else { return }
     
-    guard let url = Bundle.main.url(forResource: "bowl", withExtension: "wav") else {
-      print("Could not find bowl.wav file")
+    guard let url = Bundle.main.url(forResource: soundName, withExtension: "wav") else {
+      print("Could not find \(soundName).wav file")
       return
     }
     
@@ -326,7 +327,7 @@ struct TimerView: View {
     }
     
     // Sound effect for round start
-    playSound()
+    playSound(roundStartSound)
 
     updateProgress()  // Update progress immediately when starting
     timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
@@ -370,19 +371,20 @@ struct TimerView: View {
   }
 
   private func completeCurrentSession() {
-    // Haptic feedback for round completion
-    if vibrationEnabled {
-      let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-      impactFeedback.impactOccurred()
-    }
-    
-    // Sound effect for round completion
-    playSound()
 
     if isBreak {
       // Break completed, start next round
       isBreak = false
       timeRemaining = lengthSeconds
+      
+      // Haptic feedback for round start
+      if vibrationEnabled {
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+      }
+      
+      // Sound effect for round start
+      playSound(roundStartSound)
 
       if !isInfiniteMode {
         currentRound += 1
@@ -400,6 +402,15 @@ struct TimerView: View {
         // Start break
         isBreak = true
         timeRemaining = breakSeconds
+        
+        // Haptic feedback for break start
+        if vibrationEnabled {
+          let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+          impactFeedback.impactOccurred()
+        }
+        
+        // Sound effect for break start
+        playSound(breakStartSound)
       } else if !isInfiniteMode {
         // No break, move to next round or complete
         currentRound += 1
@@ -408,11 +419,29 @@ struct TimerView: View {
           return
         } else {
           timeRemaining = lengthSeconds
+          
+          // Haptic feedback for round start
+          if vibrationEnabled {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            impactFeedback.impactOccurred()
+          }
+          
+          // Sound effect for round start
+          playSound(roundStartSound)
         }
       } else {
         // Infinite mode, restart
         timeRemaining = lengthSeconds
         progress = 0.0
+        
+        // Haptic feedback for round start
+        if vibrationEnabled {
+          let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+          impactFeedback.impactOccurred()
+        }
+        
+        // Sound effect for round start
+        playSound(roundStartSound)
       }
     }
 
@@ -439,14 +468,14 @@ struct TimerView: View {
     }
     
     // Triple sound effect for completion
-    playSound()
+    playSound(breakStartSound)
     
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-      playSound()
+      playSound(breakStartSound)
     }
     
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-      playSound()
+      playSound(breakStartSound)
     }
 
     // Start fade out sequence

@@ -10,7 +10,10 @@ import SwiftUI
 struct SettingsView: View {
   @Environment(\.dismiss) private var dismiss
   @AppStorage("vibrationEnabled") private var vibrationEnabled = true
-  @AppStorage("soundEnabled") private var soundEnabled = true
+  @AppStorage("roundStartSound") private var roundStartSound = "bowl"
+  @AppStorage("breakStartSound") private var breakStartSound = "bell"
+  
+  private let soundOptions = ["none", "bell", "bowl", "ding", "gong"]
 
   var body: some View {
     NavigationView {
@@ -18,7 +21,20 @@ struct SettingsView: View {
 
         Form {
           Toggle("Vibration", isOn: $vibrationEnabled)
-          Toggle("Sound Effects", isOn: $soundEnabled)
+          
+          Section("Sound Effects") {
+            Picker("Round Start", selection: $roundStartSound) {
+              ForEach(soundOptions, id: \.self) { sound in
+                Text(sound.capitalized).tag(sound)
+              }
+            }
+            
+            Picker("Break Start", selection: $breakStartSound) {
+              ForEach(soundOptions, id: \.self) { sound in
+                Text(sound.capitalized).tag(sound)
+              }
+            }
+          }
         }
 
         //        Spacer()
