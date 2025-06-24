@@ -158,109 +158,38 @@ struct SegmentedRadialProgressView: View {
 struct TimerView: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(\.colorScheme) private var colorScheme
-  @State private var isPaused = false
-  @State private var isRunning = false
+  @StateObject private var timerController = TimerController()
 
   @Binding var rounds: Int
   @Binding var lengthSeconds: Int
   @Binding var breakSeconds: Int
-  @AppStorage("vibrationEnabled") private var vibrationEnabled = true
-  @AppStorage("roundStartSound") private var roundStartSound = "bowl"
-  @AppStorage("breakStartSound") private var breakStartSound = "bell"
-  @AppStorage("sessionEndSound") private var sessionEndSound = "bell"
-  @State private var currentRound = 1
-  @State private var progress: Double = 0.0
-  @State private var timeRemaining: Int = 0
-  @State private var isBreak = false
-  @State private var isCompleted = false
-  @State private var timer: Timer?
-  @State private var showCircle = true
-  @State private var showTimerText = true
-  @State private var audioPlayer: AVAudioPlayer?
-
-  private var isInfiniteMode: Bool {
-    rounds == 0
-  }
-
-  private var totalRounds: Int {
-    isInfiniteMode ? 1 : rounds
-  }
-
-  private var currentSessionLength: Int {
-    isBreak ? breakSeconds : lengthSeconds
-  }
-
-  private func formatTime(_ seconds: Int) -> String {
-    let minutes = seconds / 60
-    let remainingSeconds = seconds % 60
-    
-    if self.lengthSeconds < 60 && self.breakSeconds < 60 {
-      return "\(seconds)"
-    } else {
-      return String(format: "%d:%02d", minutes, remainingSeconds)
-    }
-  }
-
-  private func playSound(_ soundName: String) {
-    guard soundName != "none" else { return }
-
-    guard let url = Bundle.main.url(forResource: soundName, withExtension: "wav") else {
-      print("Could not find \(soundName).wav file")
-      return
-    }
-
-    do {
-      audioPlayer = try AVAudioPlayer(contentsOf: url)
-      audioPlayer?.play()
-    } catch {
-      print("Error playing sound: \(error)")
-    }
-  }
 
   var body: some View {
     VStack(spacing: 40) {
 
       Spacer()
 
-      ZStack {
-        SegmentedRadialProgressView(
-          rounds: rounds,
-          currentRound: currentRound,
-          progress: progress,
-          timeRemaining: timeRemaining,
-          isCompleted: isCompleted,
-          isBreak: isBreak
-        )
-        .opacity(showCircle ? 1.0 : 0.0)
-        .animation(.easeOut(duration: 2.0), value: showCircle)
-
-        Text(formatTime(timeRemaining))
-          .font(.system(size: 48, weight: .black).monospaced())
-          .foregroundStyle(.primary)
-          .opacity(showTimerText ? (isBreak ? 0.2 : 0.75) : 0.0)
-          .animation(.easeInOut(duration: 0.5), value: isBreak)
-          .animation(.easeOut(duration: 2.0), value: showTimerText)
-      }
-      .frame(width: 250, height: 250)
+      Timer(
+        rounds: rounds,
+        roundLength: lengthSeconds,
+        breakLength: breakSeconds,
+        controller: timerController
+      )
 
       Spacer()
 
       HStack(spacing: 30) {
         Button(action: {
-          if isCompleted {
-            // Reset and restart timer
-            resetProgressBars()
-            isCompleted = false
-            showCircle = true
-            showTimerText = true
-            startTimer()
-          } else if isRunning {
-            pauseTimer()
+          if timerController.isCompleted {
+            timerController.reset()
+            timerController.start()
+          } else if timerController.isRunning {
+            timerController.pause()
           } else {
-            startTimer()
+            timerController.start()
           }
         }) {
-          Image(systemName: (isRunning && !isCompleted) ? "pause.fill" : "play.fill")
+          Image(systemName: (timerController.isRunning && !timerController.isCompleted) ? "pause.fill" : "play.fill")
             .font(.system(size: 30))
             .frame(width: 80, height: 80)
             .foregroundColor(.orange)
@@ -287,215 +216,8 @@ struct TimerView: View {
         .aspectRatio(contentMode: .fill)
         .ignoresSafeArea()
     )
-    .onAppear {
-      setupInitialTimer()
-      startTimer()
-    }
-    .onChange(of: lengthSeconds) { _, _ in
-      setupInitialTimer()
-    }
-    .onChange(of: breakSeconds) { _, _ in
-      setupInitialTimer()
-    }
-    .onChange(of: rounds) { _, _ in
-      setupInitialTimer()
-    }
-    .onDisappear {
-      stopTimer()
-    }
   }
 
-  private func setupInitialTimer() {
-    timeRemaining = lengthSeconds
-    currentRound = 1
-    progress = 0.0
-    isBreak = false
-    isCompleted = false
-    isRunning = false
-    showCircle = true
-    showTimerText = true
-    stopTimer()
-  }
-
-  private func startTimer() {
-    isRunning = true
-
-    // Haptic feedback for round start
-    if vibrationEnabled {
-      let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-      impactFeedback.impactOccurred()
-    }
-
-    // Sound effect for round start
-    playSound(roundStartSound)
-
-    updateProgress()  // Update progress immediately when starting
-    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-      timeRemaining -= 1
-      updateProgress()
-
-      if timeRemaining <= 0 {
-        completeCurrentSession()
-      }
-    }
-  }
-
-  private func pauseTimer() {
-    isRunning = false
-    timer?.invalidate()
-    timer = nil
-  }
-
-  private func stopTimer() {
-    timer?.invalidate()
-    timer = nil
-    isRunning = false
-  }
-
-  private func updateProgress() {
-    if isBreak {
-      // Don't update progress during breaks - keep current progress
-      return
-    }
-
-    // Calculate progress to start immediately and complete 1 second before text reaches 0
-    let elapsedTime = Double(lengthSeconds - timeRemaining)
-    let roundProgress = min(1.0, (elapsedTime + 1) / Double(lengthSeconds))
-
-    if isInfiniteMode {
-      progress = roundProgress
-    } else {
-      let completedRounds = Double(currentRound - 1)
-      progress = (completedRounds + roundProgress) / Double(rounds)
-    }
-  }
-
-  private func completeCurrentSession() {
-
-    if isBreak {
-      // Break completed, start next round
-      isBreak = false
-      timeRemaining = lengthSeconds
-
-      // Haptic feedback for round start
-      if vibrationEnabled {
-        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-        impactFeedback.impactOccurred()
-      }
-
-      // Sound effect for round start
-      playSound(roundStartSound)
-
-      if !isInfiniteMode {
-        currentRound += 1
-        if currentRound > rounds {
-          // All rounds completed
-          completeAllRounds()
-          return
-        }
-      }
-    } else {
-      // Round completed - update progress immediately before break
-      updateProgress()
-
-      if breakSeconds > 0 && (!isInfiniteMode && currentRound < rounds) {
-        // Start break
-        isBreak = true
-        timeRemaining = breakSeconds
-
-        // Haptic feedback for break start
-        if vibrationEnabled {
-          let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-          impactFeedback.impactOccurred()
-        }
-
-        // Sound effect for break start
-        playSound(breakStartSound)
-      } else if !isInfiniteMode {
-        // No break, move to next round or complete
-        currentRound += 1
-        if currentRound > rounds {
-          completeAllRounds()
-          return
-        } else {
-          timeRemaining = lengthSeconds
-
-          // Haptic feedback for round start
-          if vibrationEnabled {
-            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-            impactFeedback.impactOccurred()
-          }
-
-          // Sound effect for round start
-          playSound(roundStartSound)
-        }
-      } else {
-        // Infinite mode, restart
-        timeRemaining = lengthSeconds
-        progress = 0.0
-
-        // Haptic feedback for round start
-        if vibrationEnabled {
-          let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-          impactFeedback.impactOccurred()
-        }
-
-        // Sound effect for round start
-        playSound(roundStartSound)
-      }
-    }
-
-    updateProgress()
-  }
-
-  private func completeAllRounds() {
-    stopTimer()
-    isCompleted = true
-    progress = 1.0
-
-    // Triple vibration for completion
-    if vibrationEnabled {
-      let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
-      impactFeedback.impactOccurred()
-
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-        impactFeedback.impactOccurred()
-      }
-
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-        impactFeedback.impactOccurred()
-      }
-    }
-
-    // Session end sound
-    playSound(sessionEndSound)
-
-    // Start fade out sequence
-    // Timer text fades after 1s delay
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-      showTimerText = false
-    }
-
-    // Progress circle fades after 3s delay
-    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-      showCircle = false
-    }
-
-    // Reset progress bars after fade animation completes (3s delay + 2s animation = 5s total)
-    DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-      resetProgressBars()
-    }
-  }
-
-  private func resetProgressBars() {
-    progress = 0.0
-    currentRound = 1
-    timeRemaining = lengthSeconds
-    isBreak = false
-    // Keep elements hidden after reset
-    showCircle = false
-    showTimerText = false
-  }
 }
 
 #Preview {
