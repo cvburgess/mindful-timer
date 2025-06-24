@@ -104,6 +104,7 @@ struct SegmentedRadialProgressView: View {
 
 struct TimerView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var isPaused = false
     @State private var isRunning = false
     
@@ -188,7 +189,12 @@ struct TimerView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
+        .background(
+            Image("waves-\(colorScheme == .dark ? "dark" : "light")")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .ignoresSafeArea()
+        )
         .onAppear {
             setupInitialTimer()
             startTimer()
