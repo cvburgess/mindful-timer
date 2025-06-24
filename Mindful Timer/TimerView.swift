@@ -90,6 +90,7 @@ struct SegmentedRadialProgressView: View {
                 Text(formatTime(timeRemaining))
                 .font(.system(size: 48, weight: .black))
                 .foregroundStyle(.primary)
+                .opacity(0.8)
             
         }
     }
