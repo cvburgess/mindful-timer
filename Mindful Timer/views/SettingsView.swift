@@ -69,10 +69,28 @@ struct SettingsView: View {
           }
 
           Section {
-            Button("Attributions") {
-              showingAttributions = true
+            HStack {
+              Button("Source on GitHub") {
+                if let url = URL(string: "https://github.com/cvburgess/mindful-timer/") {
+                  UIApplication.shared.open(url)
+                }
+              }
+              .foregroundColor(.primary)
+              Spacer()
+              Image(systemName: "chevron.right")
+                .foregroundColor(.secondary)
+                .font(.footnote)
             }
-            .foregroundColor(.primary)
+            HStack {
+              Button("Attributions") {
+                showingAttributions = true
+              }
+              .foregroundColor(.primary)
+              Spacer()
+              Image(systemName: "chevron.right")
+                .foregroundColor(.secondary)
+                .font(.footnote)
+            }
           }
         }
       }
