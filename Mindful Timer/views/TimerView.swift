@@ -200,9 +200,9 @@ struct TimerView: View {
               ? "pause.fill" : "play.fill"
           )
           .font(.system(size: 30))
-          .frame(width: 80, height: 80)
           .foregroundColor(.orange)
-          .clipShape(Circle())
+          .padding(10)
+          .frame(width: 80, height: 80)
         }
 
         GlassButton(action: {
@@ -210,9 +210,9 @@ struct TimerView: View {
         }) {
           Image(systemName: "stop.fill")
             .font(.system(size: 30))
-            .frame(width: 80, height: 80)
             .foregroundColor(.red)
-            .clipShape(Circle())
+            .padding(10)
+            .frame(width: 80, height: 80)
         }
       }
     }

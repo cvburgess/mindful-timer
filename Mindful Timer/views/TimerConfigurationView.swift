@@ -139,8 +139,9 @@ struct TimerConfigurationView: View {
         }) {
           Image(systemName: "gearshape.fill")
             .font(.system(size: 30))
+            .foregroundColor(.primary)
+            .padding(10)
             .frame(width: 80, height: 80)
-            .clipShape(Circle())
         }
 
         GlassButton(action: {
@@ -148,9 +149,9 @@ struct TimerConfigurationView: View {
         }) {
           Image(systemName: "play.fill")
             .font(.system(size: 30))
+            .foregroundColor(.orange)
+            .padding(10)
             .frame(width: 80, height: 80)
-            .foregroundColor(.blue)
-            .clipShape(Circle())
         }
 
       }
