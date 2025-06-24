@@ -33,8 +33,6 @@ struct SettingsView: View {
             }
           }
         }
-
-        //        Spacer()
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .background(Color(.systemBackground))
