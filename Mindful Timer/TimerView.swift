@@ -87,16 +87,9 @@ struct SegmentedRadialProgressView: View {
                 }
             }
             
-            VStack {
                 Text(formatTime(timeRemaining))
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.primary)
-                if !isInfiniteMode {
-                    Text("\(currentRound) / \(rounds)")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.secondary)
-                }
-            }
+                .font(.system(size: 48, weight: .black))
+                .foregroundStyle(.primary)
             
         }
     }
