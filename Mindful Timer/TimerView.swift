@@ -153,12 +153,6 @@ struct SegmentedRadialProgressView: View {
 
     }
   }
-
-  private func formatTime(_ seconds: Int) -> String {
-    let minutes = seconds / 60
-    let remainingSeconds = seconds % 60
-    return String(format: "%d:%02d", minutes, remainingSeconds)
-  }
 }
 
 struct TimerView: View {
