@@ -211,14 +211,14 @@ struct TimerView: View {
           isBreak: isBreak
         )
         .opacity(showCircle ? 1.0 : 0.0)
-        .animation(.easeOut(duration: 1.0), value: showCircle)
+        .animation(.easeOut(duration: 2.0), value: showCircle)
         
         Text(formatTime(timeRemaining))
           .font(.system(size: 48, weight: .black).monospaced())
           .foregroundStyle(.primary)
           .opacity(showTimerText ? (isBreak ? 0.2 : 0.75) : 0.0)
           .animation(.easeInOut(duration: 0.5), value: isBreak)
-          .animation(.easeOut(duration: 1.0), value: showTimerText)
+          .animation(.easeOut(duration: 2.0), value: showTimerText)
       }
       .frame(width: 250, height: 250)
 
@@ -378,11 +378,14 @@ struct TimerView: View {
     progress = 1.0
     
     // Start fade out sequence
-    showCircle = false
-    
-    // Fade out timer text after circle fades out
+    // Timer text fades after 1s delay
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
       showTimerText = false
+    }
+    
+    // Progress circle fades after 3s delay
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+      showCircle = false
     }
   }
 }
