@@ -226,6 +226,7 @@ struct ContentView: View {
   @State private var showRoundsPicker = false
   @State private var showLengthPicker = false
   @State private var showBreakPicker = false
+  @State private var vibrationEnabled = true
 
   private var lengthSecondsBinding: Binding<Int> {
     Binding(
@@ -260,11 +261,12 @@ struct ContentView: View {
       TimerView(
         rounds: $rounds,
         lengthSeconds: lengthSecondsBinding,
-        breakSeconds: breakSecondsBinding
+        breakSeconds: breakSecondsBinding,
+        vibrationEnabled: $vibrationEnabled
       )
     }
     .sheet(isPresented: $showSettings) {
-      SettingsView()
+      SettingsView(vibrationEnabled: $vibrationEnabled)
     }
   }
 }

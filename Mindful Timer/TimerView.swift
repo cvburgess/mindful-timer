@@ -169,6 +169,7 @@ struct TimerView: View {
   @Binding var rounds: Int
   @Binding var lengthSeconds: Int
   @Binding var breakSeconds: Int
+  @Binding var vibrationEnabled: Bool
   @State private var currentRound = 1
   @State private var progress: Double = 0.0
   @State private var timeRemaining: Int = 0
@@ -246,7 +247,7 @@ struct TimerView: View {
             .clipShape(Circle())
         }
         .buttonStyle(.glass)
-
+ 
         Button(action: {
           dismiss()
         }) {
@@ -300,8 +301,10 @@ struct TimerView: View {
     isRunning = true
     
     // Haptic feedback for round start
-    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-    impactFeedback.impactOccurred()
+    if vibrationEnabled {
+      let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+      impactFeedback.impactOccurred()
+    }
     
     updateProgress()  // Update progress immediately when starting
     timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
@@ -346,8 +349,10 @@ struct TimerView: View {
 
   private func completeCurrentSession() {
     // Haptic feedback for round completion
-    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-    impactFeedback.impactOccurred()
+    if vibrationEnabled {
+      let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+      impactFeedback.impactOccurred()
+    }
     
     if isBreak {
       // Break completed, start next round
@@ -395,15 +400,17 @@ struct TimerView: View {
     progress = 1.0
     
     // Triple vibration for completion
-    let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
-    impactFeedback.impactOccurred()
-    
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+    if vibrationEnabled {
+      let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
       impactFeedback.impactOccurred()
-    }
-    
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-      impactFeedback.impactOccurred()
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        impactFeedback.impactOccurred()
+      }
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+        impactFeedback.impactOccurred()
+      }
     }
     
     // Start fade out sequence
@@ -435,5 +442,5 @@ struct TimerView: View {
 }
 
 #Preview {
-  TimerView(rounds: .constant(21), lengthSeconds: .constant(5), breakSeconds: .constant(0))
+  TimerView(rounds: .constant(21), lengthSeconds: .constant(5), breakSeconds: .constant(0), vibrationEnabled: .constant(true))
 }
