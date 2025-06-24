@@ -153,7 +153,7 @@ struct TimerConfigurationView: View {
     }
     .padding()
     .background(
-      Image("waves-\(colorScheme == .dark ? "dark" : "light")")
+      Image("lake-\(colorScheme == .dark ? "dark" : "light")")
         .resizable()
         .aspectRatio(contentMode: .fill)
         .ignoresSafeArea()
