@@ -13,6 +13,7 @@ struct SegmentedRadialProgressView: View {
   let progress: Double
   let timeRemaining: Int
   let isCompleted: Bool
+  let spacingRatio: Double = 0.2
 
   private var isInfiniteMode: Bool {
     rounds == 0
@@ -22,13 +23,15 @@ struct SegmentedRadialProgressView: View {
     isInfiniteMode ? 0 : 360.0 / Double(rounds)
   }
 
+  private var wedgeSize: Double {
+    !isInfiniteMode ? (1.0 / Double(rounds)) * (1.0 - spacingRatio) : 0
+  }
+
   var body: some View {
     ZStack {
       // Background wedges
       if !isInfiniteMode {
         ForEach(0..<rounds, id: \.self) { index in
-          let spacingRatio = 0.2  // 15% spacing between wedges
-          let wedgeSize = (1.0 / Double(rounds)) * (1.0 - spacingRatio)
           let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
 
           Circle()
@@ -72,8 +75,6 @@ struct SegmentedRadialProgressView: View {
             ? (progress - Double(index) / Double(rounds)) * Double(rounds)
             : (isCompleted ? 1.0 : 0.0)
 
-          let spacingRatio = 0.15  // 15% spacing between wedges
-          let wedgeSize = (1.0 / Double(rounds)) * (1.0 - spacingRatio)
           let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
 
           Circle()
