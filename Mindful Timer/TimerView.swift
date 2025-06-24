@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct SegmentedRadialProgressView: View {
   @Environment(\.colorScheme) private var colorScheme
@@ -170,6 +171,7 @@ struct TimerView: View {
   @Binding var lengthSeconds: Int
   @Binding var breakSeconds: Int
   @AppStorage("vibrationEnabled") private var vibrationEnabled = true
+  @AppStorage("soundEnabled") private var soundEnabled = true
   @State private var currentRound = 1
   @State private var progress: Double = 0.0
   @State private var timeRemaining: Int = 0
@@ -178,6 +180,7 @@ struct TimerView: View {
   @State private var timer: Timer?
   @State private var showCircle = true
   @State private var showTimerText = true
+  @State private var audioPlayer: AVAudioPlayer?
 
   private var isInfiniteMode: Bool {
     rounds == 0
@@ -195,6 +198,22 @@ struct TimerView: View {
     let minutes = seconds / 60
     let remainingSeconds = seconds % 60
     return String(format: "%d:%02d", minutes, remainingSeconds)
+  }
+  
+  private func playSound() {
+    guard soundEnabled else { return }
+    
+    guard let url = Bundle.main.url(forResource: "bowl", withExtension: "wav") else {
+      print("Could not find bowl.wav file")
+      return
+    }
+    
+    do {
+      audioPlayer = try AVAudioPlayer(contentsOf: url)
+      audioPlayer?.play()
+    } catch {
+      print("Error playing sound: \(error)")
+    }
   }
 
   var body: some View {
@@ -305,6 +324,9 @@ struct TimerView: View {
       let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
       impactFeedback.impactOccurred()
     }
+    
+    // Sound effect for round start
+    playSound()
 
     updateProgress()  // Update progress immediately when starting
     timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
@@ -353,6 +375,9 @@ struct TimerView: View {
       let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
       impactFeedback.impactOccurred()
     }
+    
+    // Sound effect for round completion
+    playSound()
 
     if isBreak {
       // Break completed, start next round
@@ -411,6 +436,17 @@ struct TimerView: View {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
         impactFeedback.impactOccurred()
       }
+    }
+    
+    // Triple sound effect for completion
+    playSound()
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+      playSound()
+    }
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+      playSound()
     }
 
     // Start fade out sequence

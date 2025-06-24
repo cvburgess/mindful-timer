@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
   @Environment(\.dismiss) private var dismiss
   @AppStorage("vibrationEnabled") private var vibrationEnabled = true
+  @AppStorage("soundEnabled") private var soundEnabled = true
 
   var body: some View {
     NavigationView {
@@ -17,6 +18,7 @@ struct SettingsView: View {
 
         Form {
           Toggle("Vibration", isOn: $vibrationEnabled)
+          Toggle("Sound Effects", isOn: $soundEnabled)
         }
 
         //        Spacer()
