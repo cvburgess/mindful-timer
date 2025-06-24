@@ -38,8 +38,24 @@ struct SegmentedRadialProgressView: View {
     return (1.0 / Double(rounds)) * (1.0 - spacingRatio)
   }
   
+  private var progressGradient: LinearGradient {
+    if colorScheme == .dark {
+      return LinearGradient(
+        colors: [.purple, .blue],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+      )
+    } else {
+      return LinearGradient(
+        colors: [.pink, .orange],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+      )
+    }
+  }
+  
   private var progressColor: Color {
-    colorScheme == .dark ? .blue : .pink
+    colorScheme == .dark ? .blue : .orange
   }
 
   var body: some View {
@@ -84,7 +100,7 @@ struct SegmentedRadialProgressView: View {
         Circle()
           .trim(from: 0, to: progress)
           .stroke(
-            progressColor,
+            progressGradient,
             style: StrokeStyle(lineWidth: 20, lineCap: .round)
           )
           .rotationEffect(.degrees(-90))
