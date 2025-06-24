@@ -150,12 +150,6 @@ struct SegmentedRadialProgressView: View {
         }
       }
 
-      Text(formatTime(timeRemaining))
-        .font(.system(size: 48, weight: .black).monospaced())
-        .foregroundStyle(.primary)
-        .opacity(isBreak ? 0.2 : 0.75)
-        .animation(.easeInOut(duration: 0.5), value: isBreak)
-
     }
   }
 
@@ -181,6 +175,8 @@ struct TimerView: View {
   @State private var isBreak = false
   @State private var isCompleted = false
   @State private var timer: Timer?
+  @State private var showCircle = true
+  @State private var showTimerText = true
 
   private var isInfiniteMode: Bool {
     rounds == 0
@@ -205,14 +201,7 @@ struct TimerView: View {
 
       Spacer()
 
-      if isCompleted {
-        VStack {
-          Text("Done!")
-            .font(.system(size: 48, weight: .bold).monospaced())
-            .foregroundColor(.secondary)
-        }
-        .frame(width: 200, height: 200)
-      } else {
+      ZStack {
         SegmentedRadialProgressView(
           rounds: rounds,
           currentRound: currentRound,
@@ -221,8 +210,17 @@ struct TimerView: View {
           isCompleted: isCompleted,
           isBreak: isBreak
         )
-        .frame(width: 250, height: 250)
+        .opacity(showCircle ? 1.0 : 0.0)
+        .animation(.easeOut(duration: 1.0), value: showCircle)
+        
+        Text(formatTime(timeRemaining))
+          .font(.system(size: 48, weight: .black).monospaced())
+          .foregroundStyle(.primary)
+          .opacity(showTimerText ? (isBreak ? 0.2 : 0.75) : 0.0)
+          .animation(.easeInOut(duration: 0.5), value: isBreak)
+          .animation(.easeOut(duration: 1.0), value: showTimerText)
       }
+      .frame(width: 250, height: 250)
 
       Spacer()
 
@@ -285,6 +283,8 @@ struct TimerView: View {
     isBreak = false
     isCompleted = false
     isRunning = false
+    showCircle = true
+    showTimerText = true
     stopTimer()
   }
 
@@ -376,6 +376,14 @@ struct TimerView: View {
     stopTimer()
     isCompleted = true
     progress = 1.0
+    
+    // Start fade out sequence
+    showCircle = false
+    
+    // Fade out timer text after circle fades out
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+      showTimerText = false
+    }
   }
 }
 
