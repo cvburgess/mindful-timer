@@ -227,6 +227,20 @@ struct ContentView: View {
   @State private var showLengthPicker = false
   @State private var showBreakPicker = false
 
+  private var lengthSecondsBinding: Binding<Int> {
+    Binding(
+      get: { lengthMinutes * 60 + lengthSecondsOnly },
+      set: { _ in }
+    )
+  }
+  
+  private var breakSecondsBinding: Binding<Int> {
+    Binding(
+      get: { breakMinutes * 60 + breakSecondsOnly },
+      set: { _ in }
+    )
+  }
+
   var body: some View {
     NavigationStack {
       TimerConfigurationView(
@@ -244,9 +258,9 @@ struct ContentView: View {
     }
     .fullScreenCover(isPresented: $showTimer) {
       TimerView(
-        rounds: rounds,
-        lengthSeconds: lengthMinutes * 60 + lengthSecondsOnly,
-        breakSeconds: breakMinutes * 60 + breakSecondsOnly
+        rounds: $rounds,
+        lengthSeconds: lengthSecondsBinding,
+        breakSeconds: breakSecondsBinding
       )
     }
     .sheet(isPresented: $showSettings) {

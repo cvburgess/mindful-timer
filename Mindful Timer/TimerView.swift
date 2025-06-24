@@ -153,9 +153,9 @@ struct TimerView: View {
   @State private var isPaused = false
   @State private var isRunning = false
 
-  let rounds: Int
-  let lengthSeconds: Int
-  let breakSeconds: Int
+  @Binding var rounds: Int
+  @Binding var lengthSeconds: Int
+  @Binding var breakSeconds: Int
   @State private var currentRound = 1
   @State private var progress: Double = 0.0
   @State private var timeRemaining: Int = 0
@@ -244,6 +244,15 @@ struct TimerView: View {
       setupInitialTimer()
       startTimer()
     }
+    .onChange(of: lengthSeconds) { _, _ in
+      setupInitialTimer()
+    }
+    .onChange(of: breakSeconds) { _, _ in
+      setupInitialTimer()
+    }
+    .onChange(of: rounds) { _, _ in
+      setupInitialTimer()
+    }
     .onDisappear {
       stopTimer()
     }
@@ -255,6 +264,8 @@ struct TimerView: View {
     progress = 0.0
     isBreak = false
     isCompleted = false
+    isRunning = false
+    stopTimer()
   }
 
   private func startTimer() {
@@ -349,5 +360,5 @@ struct TimerView: View {
 }
 
 #Preview {
-  TimerView(rounds: 21, lengthSeconds: 5, breakSeconds: 0)
+  TimerView(rounds: .constant(21), lengthSeconds: .constant(5), breakSeconds: .constant(0))
 }
