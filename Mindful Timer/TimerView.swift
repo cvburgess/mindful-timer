@@ -226,13 +226,17 @@ struct TimerView: View {
 
       HStack(spacing: 30) {
         Button(action: {
-          if isRunning {
+          if isCompleted {
+            // Reset and restart timer
+            setupInitialTimer()
+            startTimer()
+          } else if isRunning {
             pauseTimer()
           } else {
             startTimer()
           }
         }) {
-          Image(systemName: isRunning ? "pause.fill" : "play.fill")
+          Image(systemName: (isRunning && !isCompleted) ? "pause.fill" : "play.fill")
             .font(.system(size: 30))
             .frame(width: 80, height: 80)
             .foregroundColor(.orange)
