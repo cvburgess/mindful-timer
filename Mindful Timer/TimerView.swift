@@ -198,7 +198,12 @@ struct TimerView: View {
   private func formatTime(_ seconds: Int) -> String {
     let minutes = seconds / 60
     let remainingSeconds = seconds % 60
-    return String(format: "%d:%02d", minutes, remainingSeconds)
+    
+    if self.lengthSeconds < 60 && self.breakSeconds < 60 {
+      return "\(seconds)"
+    } else {
+      return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
   }
 
   private func playSound(_ soundName: String) {
