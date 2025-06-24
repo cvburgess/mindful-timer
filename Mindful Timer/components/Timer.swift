@@ -161,7 +161,7 @@ struct Timer: View {
       // Sound effect for round start
       playSound(roundStartSound)
     }
-    
+
     isResuming = false
 
     updateProgress()
