@@ -159,13 +159,6 @@ struct TimerView: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(\.colorScheme) private var colorScheme
 
-  private func applyGlassStyleIfAvailable<T: View>(_ view: T) -> some View {
-    if #available(iOS 26.0, *) {
-      return view.buttonStyle(.glass)
-    } else {
-      return view.buttonStyle(.bordered).tint(Color(.systemBackground))
-    }
-  }
   @StateObject private var timerController = TimerController()
 
   @Binding var rounds: Int
@@ -187,39 +180,35 @@ struct TimerView: View {
       Spacer()
 
       HStack(spacing: 30) {
-        applyGlassStyleIfAvailable(
-          Button(action: {
-            if timerController.isCompleted {
-              timerController.reset()
-              timerController.start()
-            } else if timerController.isRunning {
-              timerController.pause()
-            } else {
-              timerController.start()
-            }
-          }) {
-            Image(
-              systemName: (timerController.isRunning && !timerController.isCompleted)
-                ? "pause.fill" : "play.fill"
-            )
+        GlassButton(action: {
+          if timerController.isCompleted {
+            timerController.reset()
+            timerController.start()
+          } else if timerController.isRunning {
+            timerController.pause()
+          } else {
+            timerController.start()
+          }
+        }) {
+          Image(
+            systemName: (timerController.isRunning && !timerController.isCompleted)
+              ? "pause.fill" : "play.fill"
+          )
+          .font(.system(size: 30))
+          .frame(width: 80, height: 80)
+          .foregroundColor(.orange)
+          .clipShape(Circle())
+        }
+
+        GlassButton(action: {
+          dismiss()
+        }) {
+          Image(systemName: "stop.fill")
             .font(.system(size: 30))
             .frame(width: 80, height: 80)
-            .foregroundColor(.orange)
+            .foregroundColor(.red)
             .clipShape(Circle())
-          }
-        )
-
-        applyGlassStyleIfAvailable(
-          Button(action: {
-            dismiss()
-          }) {
-            Image(systemName: "stop.fill")
-              .font(.system(size: 30))
-              .frame(width: 80, height: 80)
-              .foregroundColor(.red)
-              .clipShape(Circle())
-          }
-        )
+        }
       }
     }
     .padding()
