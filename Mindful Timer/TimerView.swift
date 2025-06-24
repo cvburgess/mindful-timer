@@ -214,6 +214,7 @@ struct TimerView: View {
     
     private func startTimer() {
         isRunning = true
+        updateProgress() // Update progress immediately when starting
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             timeRemaining -= 1
             updateProgress()
@@ -242,9 +243,9 @@ struct TimerView: View {
             return
         }
         
-        // Calculate progress to complete 1 second before the text reaches 0
+        // Calculate progress to start immediately and complete 1 second before text reaches 0
         let elapsedTime = Double(lengthSeconds - timeRemaining)
-        let roundProgress = min(1.0, elapsedTime / Double(lengthSeconds - 1))
+        let roundProgress = min(1.0, (elapsedTime + 1) / Double(lengthSeconds))
         
         if isInfiniteMode {
             progress = roundProgress
