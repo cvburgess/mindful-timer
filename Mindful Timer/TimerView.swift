@@ -242,7 +242,9 @@ struct TimerView: View {
             return
         }
         
-        let roundProgress = Double(lengthSeconds - timeRemaining) / Double(lengthSeconds)
+        // Calculate progress to complete 1 second before the text reaches 0
+        let elapsedTime = Double(lengthSeconds - timeRemaining)
+        let roundProgress = min(1.0, elapsedTime / Double(lengthSeconds - 1))
         
         if isInfiniteMode {
             progress = roundProgress
@@ -267,7 +269,9 @@ struct TimerView: View {
                 }
             }
         } else {
-            // Round completed
+            // Round completed - update progress immediately before break
+            updateProgress()
+            
             if breakSeconds > 0 && (!isInfiniteMode && currentRound < rounds) {
                 // Start break
                 isBreak = true
