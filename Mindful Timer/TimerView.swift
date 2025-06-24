@@ -244,7 +244,8 @@ struct TimerView: View {
             .frame(width: 80, height: 80)
             .foregroundColor(.orange)
             .clipShape(Circle())
-        }.buttonStyle(.glass)
+        }
+        .buttonStyle(.glass)
 
         Button(action: {
           dismiss()
@@ -297,6 +298,11 @@ struct TimerView: View {
 
   private func startTimer() {
     isRunning = true
+    
+    // Haptic feedback for round start
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    impactFeedback.impactOccurred()
+    
     updateProgress()  // Update progress immediately when starting
     timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
       timeRemaining -= 1
@@ -339,6 +345,10 @@ struct TimerView: View {
   }
 
   private func completeCurrentSession() {
+    // Haptic feedback for round completion
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    impactFeedback.impactOccurred()
+    
     if isBreak {
       // Break completed, start next round
       isBreak = false
