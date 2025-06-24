@@ -52,6 +52,14 @@ struct TimePicker: View {
 
 struct TimerConfigurationView: View {
   @Environment(\.colorScheme) private var colorScheme
+
+  private func applyGlassStyleIfAvailable<T: View>(_ view: T) -> some View {
+    if #available(iOS 26.0, *) {
+      return view.buttonStyle(.glass)
+    } else {
+      return view.buttonStyle(.bordered).tint(Color(.systemBackground))
+    }
+  }
   @Binding var showTimer: Bool
   @Binding var showSettings: Bool
   @Binding var rounds: Int
@@ -103,15 +111,17 @@ struct TimerConfigurationView: View {
 
       VStack(spacing: 30) {
         VStack(spacing: 10) {
-          Button(action: {
-            showLengthPicker = false
-            showBreakPicker = false
-            showRoundsPicker.toggle()
-          }) {
-            Text(formatRounds(rounds))
-              .foregroundColor(.primary).padding(10)
-              .frame(width: 200)
-          }.buttonStyle(.glass)
+          applyGlassStyleIfAvailable(
+            Button(action: {
+              showLengthPicker = false
+              showBreakPicker = false
+              showRoundsPicker.toggle()
+            }) {
+              Text(formatRounds(rounds))
+                .foregroundColor(.primary).padding(10)
+                .frame(width: 200)
+            }
+          )
 
           if showRoundsPicker {
             Picker("Rounds", selection: $rounds) {
@@ -126,15 +136,17 @@ struct TimerConfigurationView: View {
         }
 
         VStack(spacing: 10) {
-          Button(action: {
-            showRoundsPicker = false
-            showBreakPicker = false
-            showLengthPicker.toggle()
-          }) {
-            Text("\(formatTime(lengthTotalSeconds)) each")
-              .foregroundColor(.primary).padding(10)
-              .frame(width: 200)
-          }.buttonStyle(.glass)
+          applyGlassStyleIfAvailable(
+            Button(action: {
+              showRoundsPicker = false
+              showBreakPicker = false
+              showLengthPicker.toggle()
+            }) {
+              Text("\(formatTime(lengthTotalSeconds)) each")
+                .foregroundColor(.primary).padding(10)
+                .frame(width: 200)
+            }
+          )
 
           if showLengthPicker {
             TimePicker(
@@ -147,15 +159,17 @@ struct TimerConfigurationView: View {
         }
 
         VStack(spacing: 10) {
-          Button(action: {
-            showRoundsPicker = false
-            showLengthPicker = false
-            showBreakPicker.toggle()
-          }) {
-            Text("\(formatTime(breakTotalSeconds)) breaks")
-              .foregroundColor(.primary).padding(10)
-              .frame(width: 200)
-          }.buttonStyle(.glass)
+          applyGlassStyleIfAvailable(
+            Button(action: {
+              showRoundsPicker = false
+              showLengthPicker = false
+              showBreakPicker.toggle()
+            }) {
+              Text("\(formatTime(breakTotalSeconds)) breaks")
+                .foregroundColor(.primary).padding(10)
+                .frame(width: 200)
+            }
+          )
 
           if showBreakPicker {
             TimePicker(
@@ -172,24 +186,28 @@ struct TimerConfigurationView: View {
       Spacer()
 
       HStack(spacing: 30) {
-        Button(action: {
-          showSettings = true
-        }) {
-          Image(systemName: "gearshape.fill")
-            .font(.system(size: 30))
-            .frame(width: 80, height: 80)
-            .clipShape(Circle())
-        }.buttonStyle(.glass)
+        applyGlassStyleIfAvailable(
+          Button(action: {
+            showSettings = true
+          }) {
+            Image(systemName: "gearshape.fill")
+              .font(.system(size: 30))
+              .frame(width: 80, height: 80)
+              .clipShape(Circle())
+          }
+        )
 
-        Button(action: {
-          showTimer = true
-        }) {
-          Image(systemName: "play.fill")
-            .font(.system(size: 30))
-            .frame(width: 80, height: 80)
-            .foregroundColor(.blue)
-            .clipShape(Circle())
-        }.buttonStyle(.glass)
+        applyGlassStyleIfAvailable(
+          Button(action: {
+            showTimer = true
+          }) {
+            Image(systemName: "play.fill")
+              .font(.system(size: 30))
+              .frame(width: 80, height: 80)
+              .foregroundColor(.blue)
+              .clipShape(Circle())
+          }
+        )
 
       }
 

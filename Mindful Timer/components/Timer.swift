@@ -6,25 +6,25 @@
 //
 
 import AVFoundation
-import SwiftUI
 import Combine
+import SwiftUI
 
 class TimerController: ObservableObject {
   @Published var isRunning = false
   @Published var isCompleted = false
-  
+
   var startTimer: (() -> Void)?
   var pauseTimer: (() -> Void)?
   var resetTimer: (() -> Void)?
-  
+
   func start() {
     startTimer?()
   }
-  
+
   func pause() {
     pauseTimer?()
   }
-  
+
   func reset() {
     resetTimer?()
   }
@@ -32,17 +32,17 @@ class TimerController: ObservableObject {
 
 struct Timer: View {
   @Environment(\.colorScheme) private var colorScheme
-  
+
   let rounds: Int
   let roundLength: Int
   let breakLength: Int
   let controller: TimerController
-  
+
   @AppStorage("vibrationEnabled") private var vibrationEnabled = true
   @AppStorage("roundStartSound") private var roundStartSound = "bowl"
   @AppStorage("breakStartSound") private var breakStartSound = "bell"
   @AppStorage("sessionEndSound") private var sessionEndSound = "bell"
-  
+
   @State private var currentRound = 1
   @State private var progress: Double = 0.0
   @State private var timeRemaining: Int = 0
@@ -53,30 +53,30 @@ struct Timer: View {
   @State private var showTimerText = true
   @State private var audioPlayer: AVAudioPlayer?
   @State private var isRunning = false
-  
+
   private var isInfiniteMode: Bool {
     rounds == 0
   }
-  
+
   private var totalRounds: Int {
     isInfiniteMode ? 1 : rounds
   }
-  
+
   private var currentSessionLength: Int {
     isBreak ? breakLength : roundLength
   }
-  
+
   private func formatTime(_ seconds: Int) -> String {
     let minutes = seconds / 60
     let remainingSeconds = seconds % 60
-    
+
     if self.roundLength < 60 && self.breakLength < 60 {
       return "\(seconds)"
     } else {
       return String(format: "%d:%02d", minutes, remainingSeconds)
     }
   }
-  
+
   private func playSound(_ soundName: String) {
     guard soundName != "none" else { return }
 
@@ -92,7 +92,7 @@ struct Timer: View {
       print("Error playing sound: \(error)")
     }
   }
-  
+
   var body: some View {
     ZStack {
       SegmentedRadialProgressView(
@@ -132,7 +132,7 @@ struct Timer: View {
       stopTimer()
     }
   }
-  
+
   private func setupController() {
     controller.startTimer = { [self] in
       startTimer()
@@ -144,7 +144,7 @@ struct Timer: View {
       resetTimer()
     }
   }
-  
+
   func startTimer() {
     isRunning = true
     controller.isRunning = true
@@ -168,14 +168,14 @@ struct Timer: View {
       }
     }
   }
-  
+
   func pauseTimer() {
     isRunning = false
     controller.isRunning = false
     timer?.invalidate()
     timer = nil
   }
-  
+
   func resetTimer() {
     stopTimer()
     setupInitialTimer()
@@ -184,7 +184,7 @@ struct Timer: View {
     showCircle = true
     showTimerText = true
   }
-  
+
   private func setupInitialTimer() {
     timeRemaining = roundLength
     currentRound = 1
@@ -196,14 +196,14 @@ struct Timer: View {
     showTimerText = true
     stopTimer()
   }
-  
+
   private func stopTimer() {
     timer?.invalidate()
     timer = nil
     isRunning = false
     controller.isRunning = false
   }
-  
+
   private func updateProgress() {
     if isBreak {
       return
@@ -219,7 +219,7 @@ struct Timer: View {
       progress = (completedRounds + roundProgress) / Double(rounds)
     }
   }
-  
+
   private func completeCurrentSession() {
     if isBreak {
       isBreak = false
@@ -282,7 +282,7 @@ struct Timer: View {
 
     updateProgress()
   }
-  
+
   private func completeAllRounds() {
     stopTimer()
     isCompleted = true
@@ -316,7 +316,7 @@ struct Timer: View {
       resetProgressBars()
     }
   }
-  
+
   private func resetProgressBars() {
     progress = 0.0
     currentRound = 1
