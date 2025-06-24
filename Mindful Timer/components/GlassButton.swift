@@ -10,12 +10,12 @@ import SwiftUI
 struct GlassButton<Label: View>: View {
   let action: () -> Void
   let label: Label
-  
+
   init(action: @escaping () -> Void, @ViewBuilder label: () -> Label) {
     self.action = action
     self.label = label()
   }
-  
+
   var body: some View {
     if #available(iOS 26.0, *) {
       Button(action: action) {
@@ -38,7 +38,7 @@ extension GlassButton where Label == Text {
       Text(titleKey)
     }
   }
-  
+
   init<S>(_ title: S, action: @escaping () -> Void) where S: StringProtocol {
     self.init(action: action) {
       Text(title)

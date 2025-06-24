@@ -14,10 +14,15 @@ struct SettingsView: View {
   @AppStorage("roundStartSound") private var roundStartSound = "ding"
   @AppStorage("breakStartSound") private var breakStartSound = "none"
   @AppStorage("sessionEndSound") private var sessionEndSound = "bowl"
+  @AppStorage("selectedTheme") private var selectedTheme = Theme.waves.rawValue
   @State private var audioPlayer: AVAudioPlayer?
   @State private var showingAttributions = false
 
   private let soundOptions = ["none", "bell", "bowl", "ding", "gong"]
+
+  private var currentTheme: Theme {
+    Theme(rawValue: selectedTheme) ?? .waves
+  }
 
   private func playSound(_ soundName: String) {
     guard soundName != "none" else { return }
@@ -40,7 +45,15 @@ struct SettingsView: View {
       VStack(spacing: 20) {
 
         Form {
+
+          Picker("Theme", selection: $selectedTheme) {
+            ForEach(Theme.allCases, id: \.self) { theme in
+              Text(theme.displayName).tag(theme.rawValue)
+            }
+          }
+
           Toggle("Vibration", isOn: $vibrationEnabled)
+
           Picker("Round Start", selection: $roundStartSound) {
             ForEach(soundOptions, id: \.self) { sound in
               Text(sound.capitalized).tag(sound)

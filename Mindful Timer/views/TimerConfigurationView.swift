@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TimerConfigurationView: View {
   @Environment(\.colorScheme) private var colorScheme
+  @AppStorage("selectedTheme") private var selectedTheme = Theme.waves.rawValue
   @Binding var showTimer: Bool
   @Binding var showSettings: Bool
   @Binding var rounds: Int
@@ -19,6 +20,10 @@ struct TimerConfigurationView: View {
   @Binding var showRoundsPicker: Bool
   @Binding var showLengthPicker: Bool
   @Binding var showBreakPicker: Bool
+
+  private var currentTheme: Theme {
+    Theme(rawValue: selectedTheme) ?? .waves
+  }
 
   private var lengthTotalSeconds: Int {
     lengthMinutes * 60 + lengthSecondsOnly
@@ -153,7 +158,7 @@ struct TimerConfigurationView: View {
     }
     .padding()
     .background(
-      Image("lake-\(colorScheme == .dark ? "dark" : "light")")
+      Image(currentTheme.imageName(for: colorScheme))
         .resizable()
         .aspectRatio(contentMode: .fill)
         .ignoresSafeArea()

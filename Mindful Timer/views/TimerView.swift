@@ -158,12 +158,17 @@ struct SegmentedRadialProgressView: View {
 struct TimerView: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(\.colorScheme) private var colorScheme
+  @AppStorage("selectedTheme") private var selectedTheme = Theme.waves.rawValue
 
   @StateObject private var timerController = TimerController()
 
   @Binding var rounds: Int
   @Binding var lengthSeconds: Int
   @Binding var breakSeconds: Int
+
+  private var currentTheme: Theme {
+    Theme(rawValue: selectedTheme) ?? .waves
+  }
 
   var body: some View {
     VStack(spacing: 40) {
@@ -214,7 +219,7 @@ struct TimerView: View {
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(
-      Image("lake-\(colorScheme == .dark ? "dark" : "light")")
+      Image(currentTheme.imageName(for: colorScheme))
         .resizable()
         .aspectRatio(contentMode: .fill)
         .ignoresSafeArea()
