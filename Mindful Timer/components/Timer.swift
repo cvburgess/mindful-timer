@@ -53,6 +53,7 @@ struct Timer: View {
   @State private var showTimerText = true
   @State private var audioPlayer: AVAudioPlayer?
   @State private var isRunning = false
+  @State private var isResuming = false
 
   private var isInfiniteMode: Bool {
     rounds == 0
@@ -149,14 +150,19 @@ struct Timer: View {
     isRunning = true
     controller.isRunning = true
 
-    // Haptic feedback for round start
-    if vibrationEnabled {
-      let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-      impactFeedback.impactOccurred()
-    }
+    // Only play sound and haptic feedback when starting fresh, not resuming
+    if !isResuming {
+      // Haptic feedback for round start
+      if vibrationEnabled {
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+      }
 
-    // Sound effect for round start
-    playSound(roundStartSound)
+      // Sound effect for round start
+      playSound(roundStartSound)
+    }
+    
+    isResuming = false
 
     updateProgress()
     timer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
@@ -172,6 +178,7 @@ struct Timer: View {
   func pauseTimer() {
     isRunning = false
     controller.isRunning = false
+    isResuming = true
     timer?.invalidate()
     timer = nil
   }
@@ -192,6 +199,7 @@ struct Timer: View {
     isBreak = false
     isCompleted = false
     isRunning = false
+    isResuming = false
     showCircle = true
     showTimerText = true
     stopTimer()
