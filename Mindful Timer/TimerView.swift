@@ -27,7 +27,7 @@ struct SegmentedRadialProgressView: View {
       // Background wedges
       if !isInfiniteMode {
         ForEach(0..<rounds, id: \.self) { index in
-          let spacingRatio = 0.15  // 15% spacing between wedges
+          let spacingRatio = 0.2  // 15% spacing between wedges
           let wedgeSize = (1.0 / Double(rounds)) * (1.0 - spacingRatio)
           let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
 
@@ -91,9 +91,9 @@ struct SegmentedRadialProgressView: View {
       }
 
       Text(formatTime(timeRemaining))
-        .font(.system(size: 48, weight: .black))
+        .font(.system(size: 48, weight: .black).monospaced())
         .foregroundStyle(.primary)
-        .opacity(0.8)
+        .opacity(0.75)
 
     }
   }
@@ -147,8 +147,8 @@ struct TimerView: View {
       if isCompleted {
         VStack {
           Text("Done!")
-            .font(.system(size: 48, weight: .bold))
-            .foregroundColor(.green)
+            .font(.system(size: 48, weight: .bold).monospaced())
+            .foregroundColor(.secondary)
         }
         .frame(width: 200, height: 200)
       } else {
@@ -159,7 +159,7 @@ struct TimerView: View {
           timeRemaining: timeRemaining,
           isCompleted: isCompleted
         )
-        .frame(width: 200, height: 200)
+        .frame(width: 250, height: 250)
       }
 
       Spacer()
