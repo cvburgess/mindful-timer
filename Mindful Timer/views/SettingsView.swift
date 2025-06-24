@@ -15,6 +15,7 @@ struct SettingsView: View {
   @AppStorage("breakStartSound") private var breakStartSound = "none"
   @AppStorage("sessionEndSound") private var sessionEndSound = "bowl"
   @State private var audioPlayer: AVAudioPlayer?
+  @State private var showingAttributions = false
 
   private let soundOptions = ["none", "bell", "bowl", "ding", "gong"]
 
@@ -66,6 +67,13 @@ struct SettingsView: View {
           .onChange(of: sessionEndSound) { _, newValue in
             playSound(newValue)
           }
+
+          Section {
+            Button("Attributions") {
+              showingAttributions = true
+            }
+            .foregroundColor(.primary)
+          }
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -78,6 +86,9 @@ struct SettingsView: View {
             dismiss()
           }
         }
+      }
+      .sheet(isPresented: $showingAttributions) {
+        AttributionsView()
       }
     }
   }
