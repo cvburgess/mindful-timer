@@ -228,7 +228,10 @@ struct TimerView: View {
         Button(action: {
           if isCompleted {
             // Reset and restart timer
-            setupInitialTimer()
+            resetProgressBars()
+            isCompleted = false
+            showCircle = true
+            showTimerText = true
             startTimer()
           } else if isRunning {
             pauseTimer()
@@ -391,6 +394,21 @@ struct TimerView: View {
     DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
       showCircle = false
     }
+    
+    // Reset progress bars after fade animation completes (3s delay + 2s animation = 5s total)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+      resetProgressBars()
+    }
+  }
+  
+  private func resetProgressBars() {
+    progress = 0.0
+    currentRound = 1
+    timeRemaining = lengthSeconds
+    isBreak = false
+    // Keep elements hidden after reset
+    showCircle = false
+    showTimerText = false
   }
 }
 
