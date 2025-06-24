@@ -38,7 +38,7 @@ struct SegmentedRadialProgressView: View {
     guard !isInfiniteMode else { return 0 }
     return (1.0 / Double(rounds)) * (1.0 - spacingRatio)
   }
-  
+
   private var progressGradient: LinearGradient {
     if colorScheme == .dark {
       return LinearGradient(
@@ -54,7 +54,7 @@ struct SegmentedRadialProgressView: View {
       )
     }
   }
-  
+
   private var progressColor: Color {
     colorScheme == .dark ? .blue : .orange
   }
@@ -169,7 +169,7 @@ struct TimerView: View {
   @Binding var rounds: Int
   @Binding var lengthSeconds: Int
   @Binding var breakSeconds: Int
-  @Binding var vibrationEnabled: Bool
+  @AppStorage("vibrationEnabled") private var vibrationEnabled = true
   @State private var currentRound = 1
   @State private var progress: Double = 0.0
   @State private var timeRemaining: Int = 0
@@ -213,7 +213,7 @@ struct TimerView: View {
         )
         .opacity(showCircle ? 1.0 : 0.0)
         .animation(.easeOut(duration: 2.0), value: showCircle)
-        
+
         Text(formatTime(timeRemaining))
           .font(.system(size: 48, weight: .black).monospaced())
           .foregroundStyle(.primary)
@@ -247,7 +247,7 @@ struct TimerView: View {
             .clipShape(Circle())
         }
         .buttonStyle(.glass)
- 
+
         Button(action: {
           dismiss()
         }) {
@@ -299,13 +299,13 @@ struct TimerView: View {
 
   private func startTimer() {
     isRunning = true
-    
+
     // Haptic feedback for round start
     if vibrationEnabled {
       let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
       impactFeedback.impactOccurred()
     }
-    
+
     updateProgress()  // Update progress immediately when starting
     timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
       timeRemaining -= 1
@@ -353,7 +353,7 @@ struct TimerView: View {
       let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
       impactFeedback.impactOccurred()
     }
-    
+
     if isBreak {
       // Break completed, start next round
       isBreak = false
@@ -398,38 +398,38 @@ struct TimerView: View {
     stopTimer()
     isCompleted = true
     progress = 1.0
-    
+
     // Triple vibration for completion
     if vibrationEnabled {
       let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
       impactFeedback.impactOccurred()
-      
+
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
         impactFeedback.impactOccurred()
       }
-      
+
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
         impactFeedback.impactOccurred()
       }
     }
-    
+
     // Start fade out sequence
     // Timer text fades after 1s delay
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
       showTimerText = false
     }
-    
+
     // Progress circle fades after 3s delay
     DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
       showCircle = false
     }
-    
+
     // Reset progress bars after fade animation completes (3s delay + 2s animation = 5s total)
     DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
       resetProgressBars()
     }
   }
-  
+
   private func resetProgressBars() {
     progress = 0.0
     currentRound = 1
@@ -442,5 +442,5 @@ struct TimerView: View {
 }
 
 #Preview {
-  TimerView(rounds: .constant(21), lengthSeconds: .constant(5), breakSeconds: .constant(0), vibrationEnabled: .constant(true))
+  TimerView(rounds: .constant(21), lengthSeconds: .constant(5), breakSeconds: .constant(0))
 }

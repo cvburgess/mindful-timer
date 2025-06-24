@@ -9,19 +9,17 @@ import SwiftUI
 
 struct SettingsView: View {
   @Environment(\.dismiss) private var dismiss
-  @Binding var vibrationEnabled: Bool
+  @AppStorage("vibrationEnabled") private var vibrationEnabled = true
 
   var body: some View {
     NavigationView {
       VStack(spacing: 20) {
-        
+
         Form {
-          Section("Feedback") {
-            Toggle("Vibration", isOn: $vibrationEnabled)
-          }
+          Toggle("Vibration", isOn: $vibrationEnabled)
         }
-        
-        Spacer()
+
+        //        Spacer()
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .background(Color(.systemBackground))
@@ -39,5 +37,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-  SettingsView(vibrationEnabled: .constant(true))
+  SettingsView()
 }
