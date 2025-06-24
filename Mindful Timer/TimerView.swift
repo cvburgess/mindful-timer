@@ -394,6 +394,18 @@ struct TimerView: View {
     isCompleted = true
     progress = 1.0
     
+    // Triple vibration for completion
+    let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
+    impactFeedback.impactOccurred()
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+      impactFeedback.impactOccurred()
+    }
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+      impactFeedback.impactOccurred()
+    }
+    
     // Start fade out sequence
     // Timer text fades after 1s delay
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
