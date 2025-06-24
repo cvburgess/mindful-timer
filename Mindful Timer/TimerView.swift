@@ -14,6 +14,7 @@ struct SegmentedRadialProgressView: View {
   let progress: Double
   let timeRemaining: Int
   let isCompleted: Bool
+  let isBreak: Bool
   let strokeWidth: CGFloat = 12
 
   private var isInfiniteMode: Bool {
@@ -152,7 +153,8 @@ struct SegmentedRadialProgressView: View {
       Text(formatTime(timeRemaining))
         .font(.system(size: 48, weight: .black).monospaced())
         .foregroundStyle(.primary)
-        .opacity(0.75)
+        .opacity(isBreak ? 0.2 : 0.75)
+        .animation(.easeInOut(duration: 0.5), value: isBreak)
 
     }
   }
@@ -216,7 +218,8 @@ struct TimerView: View {
           currentRound: currentRound,
           progress: progress,
           timeRemaining: timeRemaining,
-          isCompleted: isCompleted
+          isCompleted: isCompleted,
+          isBreak: isBreak
         )
         .frame(width: 250, height: 250)
       }
