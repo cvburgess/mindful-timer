@@ -59,6 +59,10 @@ struct SegmentedRadialProgressView: View {
   private var progressColor: Color {
     colorScheme == .dark ? .blue : .orange
   }
+  
+  private var fillColor: Color {
+      Color.secondary.opacity(0.75)
+  }
 
   var body: some View {
     ZStack {
@@ -88,11 +92,11 @@ struct SegmentedRadialProgressView: View {
           let x = cos(angle * .pi / 180) * radius
           let y = sin(angle * .pi / 180) * radius
 
-          let isCompleted = index < currentRound - 1
+          let isCompleted = index < currentRound - 1 || (index == currentRound - 1 && isBreak)
           let shouldShow = !isCompleted
 
           Circle()
-            .fill(shouldShow ? Color.secondary.opacity(0.6) : .clear)
+            .fill(shouldShow ? fillColor : .clear)
             .frame(width: strokeWidth, height: strokeWidth)
             .offset(x: x, y: y)
             .animation(.linear(duration: 0.3), value: shouldShow)
@@ -116,7 +120,7 @@ struct SegmentedRadialProgressView: View {
               to: wedgeStart + wedgeSize
             )
             .stroke(
-              Color.secondary.opacity(0.6),
+              fillColor,
               style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
             )
             .rotationEffect(.degrees(-90))
