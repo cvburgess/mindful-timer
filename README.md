@@ -1,10 +1,14 @@
 # Mindful Timer
 
+Mindful timer is a free and open source interval timer for stretching, meditating, yin yoga, and other occasions where you want a simple timer with no ads, distractions, or other nonsense getting in your way.
+
 < TODO Screenshots from App Store >
 
 < TODO link to download from App Store >
 
 ## Platform Support
+
+The app is written natively in Swift/SwiftUI with the help of various AI tools.
 
 - [x] iOS 18+
 - [ ] iPad OS 18+
