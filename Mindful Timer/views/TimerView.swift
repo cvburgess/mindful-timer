@@ -43,13 +43,13 @@ struct SegmentedRadialProgressView: View {
   private var progressGradient: LinearGradient {
     if colorScheme == .dark {
       return LinearGradient(
-        colors: [.purple, .blue],
+        colors: [fillColor, .clear],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
       )
     } else {
       return LinearGradient(
-        colors: [.pink, .orange],
+        colors: [fillColor, .clear],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
       )
