@@ -67,14 +67,6 @@ struct SegmentedRadialProgressView: View {
   var body: some View {
     ZStack {
       if isInfiniteMode {
-        // No background circle for infinite mode - only disappearing ring will be visible
-      } else if useDots {
-        // No background dots for many rounds - only disappearing dots will be visible
-      } else {
-        // No background wedges for <= 20 rounds - only disappearing wedges will be visible
-      }
-
-      if isInfiniteMode {
         // Disappearing ring for infinite mode
         Circle()
           .trim(from: progress, to: 1.0)
@@ -112,7 +104,6 @@ struct SegmentedRadialProgressView: View {
             : (isCompleted ? 1.0 : 0.0)
 
           let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
-          let remainingWedgeSize = wedgeSize * (1.0 - segmentProgress)
 
           Circle()
             .trim(
