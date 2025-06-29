@@ -63,44 +63,17 @@ struct SegmentedRadialProgressView: View {
   var body: some View {
     ZStack {
       if isInfiniteMode {
-        // Background circle for infinite mode
-        Circle()
-          .stroke(Color.secondary.opacity(0.3), lineWidth: 20)
+        // No background circle for infinite mode - only disappearing ring will be visible
       } else if useDots {
-        // Background dots for many rounds
-        ForEach(0..<rounds, id: \.self) { index in
-          let angle = Double(index) * 360.0 / Double(rounds) - 90.0
-          let radius: CGFloat = 125
-          let x = cos(angle * .pi / 180) * radius
-          let y = sin(angle * .pi / 180) * radius
-
-          Circle()
-            .fill(Color.secondary.opacity(0.3))
-            .frame(width: strokeWidth, height: strokeWidth)
-            .offset(x: x, y: y)
-        }
+        // No background dots for many rounds - only disappearing dots will be visible
       } else {
-        // Background wedges for <= 10 rounds
-        ForEach(0..<rounds, id: \.self) { index in
-          let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
-
-          Circle()
-            .trim(
-              from: wedgeStart,
-              to: wedgeStart + wedgeSize
-            )
-            .stroke(
-              Color.secondary.opacity(0.3),
-              style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
-            )
-            .rotationEffect(.degrees(-90))
-        }
+        // No background wedges for <= 20 rounds - only disappearing wedges will be visible
       }
 
       if isInfiniteMode {
-        // Continuous ring for infinite mode
+        // Disappearing ring for infinite mode
         Circle()
-          .trim(from: 0, to: progress)
+          .trim(from: progress, to: 1.0)
           .stroke(
             progressGradient,
             style: StrokeStyle(lineWidth: 20, lineCap: .round)
@@ -108,7 +81,7 @@ struct SegmentedRadialProgressView: View {
           .rotationEffect(.degrees(-90))
           .animation(.linear(duration: 1.0), value: progress)
       } else if useDots {
-        // Progress dots for many rounds
+        // Disappearing dots for many rounds
         ForEach(0..<rounds, id: \.self) { index in
           let angle = Double(index) * 360.0 / Double(rounds) - 90.0
           let radius: CGFloat = 125
@@ -116,17 +89,16 @@ struct SegmentedRadialProgressView: View {
           let y = sin(angle * .pi / 180) * radius
 
           let isCompleted = index < currentRound - 1
-          let isCurrent = index == currentRound - 1
-          let dotColor: Color = (isCompleted || isCurrent) ? progressColor : .clear
+          let shouldShow = !isCompleted
 
           Circle()
-            .fill(dotColor)
+            .fill(shouldShow ? Color.secondary.opacity(0.6) : .clear)
             .frame(width: strokeWidth, height: strokeWidth)
             .offset(x: x, y: y)
-            .animation(.linear(duration: 0.3), value: dotColor)
+            .animation(.linear(duration: 0.3), value: shouldShow)
         }
       } else {
-        // Individual wedges for each round with spacing (<= 10 rounds)
+        // Disappearing wedges for each round with spacing (<= 20 rounds)
         ForEach(0..<rounds, id: \.self) { index in
           let isCompleted = index < currentRound - 1
           let isCurrent = index == currentRound - 1
@@ -136,14 +108,15 @@ struct SegmentedRadialProgressView: View {
             : (isCompleted ? 1.0 : 0.0)
 
           let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
+          let remainingWedgeSize = wedgeSize * (1.0 - segmentProgress)
 
           Circle()
             .trim(
-              from: wedgeStart,
-              to: wedgeStart + (segmentProgress * wedgeSize)
+              from: wedgeStart + (segmentProgress * wedgeSize),
+              to: wedgeStart + wedgeSize
             )
             .stroke(
-              progressColor,
+              Color.secondary.opacity(0.6),
               style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
             )
             .rotationEffect(.degrees(-90))
