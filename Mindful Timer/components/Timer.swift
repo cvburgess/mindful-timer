@@ -54,6 +54,7 @@ struct Timer: View {
   @State private var audioPlayer: AVAudioPlayer?
   @State private var isRunning = false
   @State private var isResuming = false
+  @State private var circleID = UUID()
 
   private var isInfiniteMode: Bool {
     rounds == 0
@@ -102,7 +103,8 @@ struct Timer: View {
         progress: progress,
         timeRemaining: timeRemaining,
         isCompleted: isCompleted,
-        isBreak: isBreak
+        isBreak: isBreak,
+        circleID: circleID
       )
       .opacity(showCircle ? 1.0 : 0.0)
       .animation(.easeOut(duration: 2.0), value: showCircle)
@@ -202,6 +204,7 @@ struct Timer: View {
     isResuming = false
     showCircle = true
     showTimerText = true
+    circleID = UUID() // Generate new circle on reset
     stopTimer()
   }
 
@@ -277,7 +280,8 @@ struct Timer: View {
         }
       } else {
         timeRemaining = roundLength
-        progress = 0.0
+        progress = 0.0 // Reset to 0 to show full circle for new infinite mode round
+        circleID = UUID() // Generate new circle for infinite mode
 
         if vibrationEnabled {
           let impactFeedback = UIImpactFeedbackGenerator(style: .medium)

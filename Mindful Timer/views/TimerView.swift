@@ -16,6 +16,7 @@ struct SegmentedRadialProgressView: View {
   let timeRemaining: Int
   let isCompleted: Bool
   let isBreak: Bool
+  let circleID: UUID
   let strokeWidth: CGFloat = 12
 
   private var isInfiniteMode: Bool {
@@ -67,7 +68,7 @@ struct SegmentedRadialProgressView: View {
   var body: some View {
     ZStack {
       if isInfiniteMode {
-        // Disappearing ring for infinite mode
+        // Disappearing ring for infinite mode - new circle for each round
         Circle()
           .trim(from: progress, to: 1.0)
           .stroke(
@@ -76,6 +77,7 @@ struct SegmentedRadialProgressView: View {
           )
           .rotationEffect(.degrees(-90))
           .animation(.linear(duration: 1.0), value: progress)
+          .id(circleID) // Force new circle creation when ID changes
       } else if useDots {
         // Disappearing dots for many rounds
         ForEach(0..<rounds, id: \.self) { index in
