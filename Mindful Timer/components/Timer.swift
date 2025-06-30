@@ -250,7 +250,7 @@ struct Timer: View {
     } else {
       updateProgress()
 
-      if breakLength > 0 && (!isInfiniteMode && currentRound < rounds) {
+      if breakLength > 0 && (isInfiniteMode || currentRound < rounds) {
         isBreak = true
         timeRemaining = breakLength
 
