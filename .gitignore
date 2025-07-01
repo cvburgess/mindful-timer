@@ -17,3 +17,9 @@ xcuserdata/
 # Build directories
 DerivedData/
 build/
+
+# Claude cache
+.claude/
+
+# Additional Xcode files
+*.xcuserstate
