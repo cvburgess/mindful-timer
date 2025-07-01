@@ -1,0 +1,74 @@
+{
+  "fill" : "automatic",
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "blend-mode" : "normal",
+          "fill" : "none",
+          "image-name" : "Union.svg",
+          "name" : "Union",
+          "opacity" : 1,
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              26.921875,
+              -41.9765625
+            ]
+          }
+        },
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "display-p3:0.42984,0.14920,0.50000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "gray:1.00000,1.00000"
+              }
+            }
+          ],
+          "hidden" : true,
+          "image-name" : "Group 212.svg",
+          "name" : "Group 212"
+        },
+        {
+          "fill" : {
+            "solid" : "display-p3:0.34130,0.10109,0.40395,1.00000"
+          },
+          "glass" : true,
+          "hidden" : true,
+          "image-name" : "Group 213.svg",
+          "name" : "Group 213"
+        },
+        {
+          "fill" : {
+            "linear-gradient" : [
+              "display-p3:1.00000,0.75500,0.65000,1.00000",
+              "display-p3:0.93333,0.32761,0.47363,1.00000"
+            ]
+          },
+          "image-name" : "Subtract.svg",
+          "name" : "Subtract"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

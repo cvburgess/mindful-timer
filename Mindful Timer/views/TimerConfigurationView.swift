@@ -168,11 +168,4 @@ struct TimerConfigurationView: View {
     .navigationBarHidden(true)
   }
 
-  var lengthTotalSecondsPublic: Int {
-    lengthTotalSeconds
-  }
-
-  var breakTotalSecondsPublic: Int {
-    breakTotalSeconds
-  }
 }

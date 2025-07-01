@@ -16,6 +16,7 @@ struct SegmentedRadialProgressView: View {
   let timeRemaining: Int
   let isCompleted: Bool
   let isBreak: Bool
+  let circleID: UUID
   let strokeWidth: CGFloat = 12
 
   private var isInfiniteMode: Bool {
@@ -43,13 +44,13 @@ struct SegmentedRadialProgressView: View {
   private var progressGradient: LinearGradient {
     if colorScheme == .dark {
       return LinearGradient(
-        colors: [.purple, .blue],
+        colors: [fillColor, .clear],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
       )
     } else {
       return LinearGradient(
-        colors: [.pink, .orange],
+        colors: [fillColor, .clear],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
       )
@@ -59,74 +60,43 @@ struct SegmentedRadialProgressView: View {
   private var progressColor: Color {
     colorScheme == .dark ? .blue : .orange
   }
+  
+  private var fillColor: Color {
+      Color.secondary.opacity(0.75)
+  }
 
   var body: some View {
     ZStack {
       if isInfiniteMode {
-        // Background circle for infinite mode
+        // Disappearing ring for infinite mode - new circle for each round
         Circle()
-          .stroke(Color.secondary.opacity(0.3), lineWidth: 20)
-      } else if useDots {
-        // Background dots for many rounds
-        ForEach(0..<rounds, id: \.self) { index in
-          let angle = Double(index) * 360.0 / Double(rounds) - 90.0
-          let radius: CGFloat = 125
-          let x = cos(angle * .pi / 180) * radius
-          let y = sin(angle * .pi / 180) * radius
-
-          Circle()
-            .fill(Color.secondary.opacity(0.3))
-            .frame(width: strokeWidth, height: strokeWidth)
-            .offset(x: x, y: y)
-        }
-      } else {
-        // Background wedges for <= 10 rounds
-        ForEach(0..<rounds, id: \.self) { index in
-          let wedgeStart = Double(index) / Double(rounds) + (spacingRatio / 2.0) / Double(rounds)
-
-          Circle()
-            .trim(
-              from: wedgeStart,
-              to: wedgeStart + wedgeSize
-            )
-            .stroke(
-              Color.secondary.opacity(0.3),
-              style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
-            )
-            .rotationEffect(.degrees(-90))
-        }
-      }
-
-      if isInfiniteMode {
-        // Continuous ring for infinite mode
-        Circle()
-          .trim(from: 0, to: progress)
+          .trim(from: progress, to: 1.0)
           .stroke(
             progressGradient,
             style: StrokeStyle(lineWidth: 20, lineCap: .round)
           )
           .rotationEffect(.degrees(-90))
           .animation(.linear(duration: 1.0), value: progress)
+          .id(circleID) // Force new circle creation when ID changes
       } else if useDots {
-        // Progress dots for many rounds
+        // Disappearing dots for many rounds
         ForEach(0..<rounds, id: \.self) { index in
           let angle = Double(index) * 360.0 / Double(rounds) - 90.0
           let radius: CGFloat = 125
           let x = cos(angle * .pi / 180) * radius
           let y = sin(angle * .pi / 180) * radius
 
-          let isCompleted = index < currentRound - 1
-          let isCurrent = index == currentRound - 1
-          let dotColor: Color = (isCompleted || isCurrent) ? progressColor : .clear
+          let isCompleted = index < currentRound - 1 || (index == currentRound - 1 && isBreak)
+          let shouldShow = !isCompleted
 
           Circle()
-            .fill(dotColor)
+            .fill(shouldShow ? fillColor : .clear)
             .frame(width: strokeWidth, height: strokeWidth)
             .offset(x: x, y: y)
-            .animation(.linear(duration: 0.3), value: dotColor)
+            .animation(.linear(duration: 0.3), value: shouldShow)
         }
       } else {
-        // Individual wedges for each round with spacing (<= 10 rounds)
+        // Disappearing wedges for each round with spacing (<= 20 rounds)
         ForEach(0..<rounds, id: \.self) { index in
           let isCompleted = index < currentRound - 1
           let isCurrent = index == currentRound - 1
@@ -139,11 +109,11 @@ struct SegmentedRadialProgressView: View {
 
           Circle()
             .trim(
-              from: wedgeStart,
-              to: wedgeStart + (segmentProgress * wedgeSize)
+              from: wedgeStart + (segmentProgress * wedgeSize),
+              to: wedgeStart + wedgeSize
             )
             .stroke(
-              progressColor,
+              fillColor,
               style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
             )
             .rotationEffect(.degrees(-90))

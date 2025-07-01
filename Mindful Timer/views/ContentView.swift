@@ -5,11 +5,9 @@
 //  Created by Charles Burgess on 6/22/25.
 //
 
-import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-  @Environment(\.modelContext) private var modelContext
   @State private var showTimer = false
   @State private var showSettings = false
   @AppStorage("rounds") private var rounds: Int = 5
