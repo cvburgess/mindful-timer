@@ -7,6 +7,7 @@
 
 import AVFoundation
 import SwiftUI
+import UIKit
 
 struct SegmentedRadialProgressView: View {
   @Environment(\.colorScheme) private var colorScheme
@@ -194,6 +195,14 @@ struct TimerView: View {
         .aspectRatio(contentMode: .fill)
         .ignoresSafeArea()
     )
+    .onAppear {
+      // Prevent screen from dimming during timer sessions
+      UIApplication.shared.isIdleTimerDisabled = true
+    }
+    .onDisappear {
+      // Re-enable screen dimming when leaving timer view
+      UIApplication.shared.isIdleTimerDisabled = false
+    }
   }
 
 }
