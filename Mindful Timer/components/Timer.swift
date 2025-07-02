@@ -6,6 +6,7 @@
 //
 
 import AVFoundation
+import Combine
 import SwiftUI
 
 class TimerController: ObservableObject {
@@ -50,7 +51,7 @@ struct Timer: View {
   @AppStorage("timerIsCompleted") private var isCompleted = false
   @AppStorage("timerIsRunning") private var isRunning = false
   @AppStorage("timerIsResuming") private var isResuming = false
-  
+
   @State private var timeRemaining: Int = 0
   @State private var showCircle = true
   @State private var showTimerText = true
@@ -135,7 +136,7 @@ struct Timer: View {
     .onChange(of: backgroundTimer.timeRemaining) { _, newValue in
       timeRemaining = newValue
       updateProgress()
-      
+
       if timeRemaining <= 0 && isRunning {
         completeCurrentSession()
       }
@@ -157,7 +158,7 @@ struct Timer: View {
   func startTimer() {
     isRunning = true
     controller.isRunning = true
-    
+
     // Set the time remaining based on current session
     timeRemaining = currentSessionLength
 
@@ -171,7 +172,7 @@ struct Timer: View {
 
       // Sound effect for round start
       playSound(roundStartSound)
-      
+
       // Start the background timer for the current session duration
       backgroundTimer.startTimer(duration: timeRemaining)
     } else {
@@ -180,7 +181,7 @@ struct Timer: View {
     }
 
     isResuming = false
-    
+
     updateProgress()
   }
 
@@ -188,7 +189,7 @@ struct Timer: View {
     isRunning = false
     controller.isRunning = false
     isResuming = true
-    
+
     // Pause the background timer
     backgroundTimer.pauseTimer()
   }
@@ -200,7 +201,7 @@ struct Timer: View {
     controller.isCompleted = false
     showCircle = true
     showTimerText = true
-    
+
     // Reset the background timer
     backgroundTimer.resetTimer()
   }
@@ -222,7 +223,7 @@ struct Timer: View {
   private func stopTimer() {
     isRunning = false
     controller.isRunning = false
-    
+
     // Stop the background timer
     backgroundTimer.resetTimer()
   }
@@ -262,7 +263,7 @@ struct Timer: View {
           return
         }
       }
-      
+
       // Start timer for the next round
       backgroundTimer.startTimer(duration: timeRemaining)
     } else {
@@ -278,7 +279,7 @@ struct Timer: View {
         }
 
         playSound(breakStartSound)
-        
+
         // Start timer for the break
         backgroundTimer.startTimer(duration: timeRemaining)
       } else if !isInfiniteMode {
@@ -295,7 +296,7 @@ struct Timer: View {
           }
 
           playSound(roundStartSound)
-          
+
           // Start timer for the next round
           backgroundTimer.startTimer(duration: timeRemaining)
         }
@@ -310,7 +311,7 @@ struct Timer: View {
         }
 
         playSound(roundStartSound)
-        
+
         // Start timer for the next infinite round
         backgroundTimer.startTimer(duration: timeRemaining)
       }
