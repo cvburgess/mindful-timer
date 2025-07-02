@@ -140,9 +140,6 @@ struct Timer: View {
         completeCurrentSession()
       }
     }
-    .onDisappear {
-      // Don't stop timer on disappear - let it continue in background
-    }
   }
 
   private func setupController() {
