@@ -209,4 +209,5 @@ struct TimerView: View {
 
 #Preview {
   TimerView(rounds: .constant(21), lengthSeconds: .constant(5), breakSeconds: .constant(0))
+    .environmentObject(BackgroundTimer())
 }
