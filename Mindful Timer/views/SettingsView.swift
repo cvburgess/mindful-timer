@@ -37,7 +37,7 @@ struct SettingsView: View {
       let audioSession = AVAudioSession.sharedInstance()
       try audioSession.setCategory(.playback, options: [.mixWithOthers, .duckOthers])
       try audioSession.setActive(true)
-      
+
       audioPlayer = try AVAudioPlayer(contentsOf: url)
       audioPlayer?.play()
     } catch {
