@@ -61,9 +61,9 @@ struct SegmentedRadialProgressView: View {
   private var progressColor: Color {
     colorScheme == .dark ? .blue : .orange
   }
-  
+
   private var fillColor: Color {
-      Color.secondary.opacity(0.75)
+    Color.secondary.opacity(0.75)
   }
 
   var body: some View {
@@ -78,7 +78,7 @@ struct SegmentedRadialProgressView: View {
           )
           .rotationEffect(.degrees(-90))
           .animation(.linear(duration: 1.0), value: progress)
-          .id(circleID) // Force new circle creation when ID changes
+          .id(circleID)  // Force new circle creation when ID changes
       } else if useDots {
         // Disappearing dots for many rounds
         ForEach(0..<rounds, id: \.self) { index in
