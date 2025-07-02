@@ -32,6 +32,7 @@ class TimerController: ObservableObject {
 
 struct Timer: View {
   @Environment(\.colorScheme) private var colorScheme
+  @EnvironmentObject private var backgroundTimer: BackgroundTimer
 
   let rounds: Int
   let roundLength: Int
@@ -43,17 +44,19 @@ struct Timer: View {
   @AppStorage("breakStartSound") private var breakStartSound = "bell"
   @AppStorage("sessionEndSound") private var sessionEndSound = "bell"
 
-  @State private var currentRound = 1
-  @State private var progress: Double = 0.0
+  // Persistent state for background operation
+  @AppStorage("timerCurrentRound") private var currentRound = 1
+  @AppStorage("timerProgress") private var progress: Double = 0.0
+  @AppStorage("timerIsBreak") private var isBreak = false
+  @AppStorage("timerIsCompleted") private var isCompleted = false
+  @AppStorage("timerIsRunning") private var isRunning = false
+  @AppStorage("timerIsResuming") private var isResuming = false
+  
   @State private var timeRemaining: Int = 0
-  @State private var isBreak = false
-  @State private var isCompleted = false
   @State private var timer: Foundation.Timer?
   @State private var showCircle = true
   @State private var showTimerText = true
   @State private var audioPlayer: AVAudioPlayer?
-  @State private var isRunning = false
-  @State private var isResuming = false
   @State private var circleID = UUID()
 
   private var isInfiniteMode: Bool {
@@ -131,8 +134,16 @@ struct Timer: View {
     .onChange(of: rounds) { _, _ in
       setupInitialTimer()
     }
+    .onChange(of: backgroundTimer.timeRemaining) { _, newValue in
+      timeRemaining = newValue
+      updateProgress()
+      
+      if timeRemaining <= 0 && isRunning {
+        completeCurrentSession()
+      }
+    }
     .onDisappear {
-      stopTimer()
+      // Don't stop timer on disappear - let it continue in background
     }
   }
 
@@ -151,6 +162,9 @@ struct Timer: View {
   func startTimer() {
     isRunning = true
     controller.isRunning = true
+    
+    // Set the time remaining based on current session
+    timeRemaining = currentSessionLength
 
     // Only play sound and haptic feedback when starting fresh, not resuming
     if !isResuming {
@@ -165,24 +179,20 @@ struct Timer: View {
     }
 
     isResuming = false
-
+    
+    // Start the background timer for the current session duration
+    backgroundTimer.startTimer(duration: timeRemaining)
+    
     updateProgress()
-    timer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-      timeRemaining -= 1
-      updateProgress()
-
-      if timeRemaining <= 0 {
-        completeCurrentSession()
-      }
-    }
   }
 
   func pauseTimer() {
     isRunning = false
     controller.isRunning = false
     isResuming = true
-    timer?.invalidate()
-    timer = nil
+    
+    // Pause the background timer
+    backgroundTimer.pauseTimer()
   }
 
   func resetTimer() {
@@ -192,6 +202,9 @@ struct Timer: View {
     controller.isCompleted = false
     showCircle = true
     showTimerText = true
+    
+    // Reset the background timer
+    backgroundTimer.resetTimer()
   }
 
   private func setupInitialTimer() {
@@ -209,10 +222,11 @@ struct Timer: View {
   }
 
   private func stopTimer() {
-    timer?.invalidate()
-    timer = nil
     isRunning = false
     controller.isRunning = false
+    
+    // Stop the background timer
+    backgroundTimer.resetTimer()
   }
 
   private func updateProgress() {
@@ -250,6 +264,9 @@ struct Timer: View {
           return
         }
       }
+      
+      // Start timer for the next round
+      backgroundTimer.startTimer(duration: timeRemaining)
     } else {
       updateProgress()
 
@@ -263,6 +280,9 @@ struct Timer: View {
         }
 
         playSound(breakStartSound)
+        
+        // Start timer for the break
+        backgroundTimer.startTimer(duration: timeRemaining)
       } else if !isInfiniteMode {
         currentRound += 1
         if currentRound > rounds {
@@ -277,6 +297,9 @@ struct Timer: View {
           }
 
           playSound(roundStartSound)
+          
+          // Start timer for the next round
+          backgroundTimer.startTimer(duration: timeRemaining)
         }
       } else {
         timeRemaining = roundLength
@@ -289,6 +312,9 @@ struct Timer: View {
         }
 
         playSound(roundStartSound)
+        
+        // Start timer for the next infinite round
+        backgroundTimer.startTimer(duration: timeRemaining)
       }
     }
 
