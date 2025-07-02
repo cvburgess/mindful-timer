@@ -176,12 +176,15 @@ struct Timer: View {
 
       // Sound effect for round start
       playSound(roundStartSound)
+      
+      // Start the background timer for the current session duration
+      backgroundTimer.startTimer(duration: timeRemaining)
+    } else {
+      // Resume the existing timer
+      backgroundTimer.resumeTimer()
     }
 
     isResuming = false
-    
-    // Start the background timer for the current session duration
-    backgroundTimer.startTimer(duration: timeRemaining)
     
     updateProgress()
   }
@@ -372,4 +375,5 @@ struct Timer: View {
     breakLength: 10,
     controller: TimerController()
   )
+  .environmentObject(BackgroundTimer())
 }

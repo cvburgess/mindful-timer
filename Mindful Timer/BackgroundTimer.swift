@@ -61,6 +61,15 @@ class BackgroundTimer: ObservableObject {
     }
   }
   
+  func resumeTimer() {
+    if isPaused {
+      startDate = Date() // Reset start date for resume
+      isTimerRunning = true
+      isPaused = false
+      startUpdateTimer()
+    }
+  }
+  
   func resetTimer() {
     isTimerRunning = false
     isPaused = false
