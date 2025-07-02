@@ -6,7 +6,6 @@
 //
 
 import AVFoundation
-import Combine
 import SwiftUI
 
 class TimerController: ObservableObject {
@@ -53,7 +52,6 @@ struct Timer: View {
   @AppStorage("timerIsResuming") private var isResuming = false
   
   @State private var timeRemaining: Int = 0
-  @State private var timer: Foundation.Timer?
   @State private var showCircle = true
   @State private var showTimerText = true
   @State private var audioPlayer: AVAudioPlayer?
