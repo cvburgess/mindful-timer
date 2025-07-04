@@ -37,7 +37,7 @@ The app is written natively in Swift/SwiftUI with the help of various AI tools.
 - [x] Customizable themes with automatic light and dark mode support
 - [x] Customizable sounds for round start, break start, and session end
 - [x] Haptic feedback (vibration) for round start, break start, and session end
-- [ ] Background support (timer continues when app is not open)
+- [x] Background support (timer continues when app is not open)
 - [ ] Live Activities (see timer progress from the lock screen)
 
 ## Getting Started
