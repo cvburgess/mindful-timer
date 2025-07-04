@@ -4,16 +4,16 @@ Mindful timer is a free and open source interval timer for stretching, meditatin
 
 <div width="100%">
 	<picture>
-		<img src="App Store/preview-1.png" width="25%" />
+		<img src="App Store/preview-1.png" width="20%" />
 	</picture>
 	<picture>
-		<img src="App Store/preview-2.png" width="25%" />
+		<img src="App Store/preview-2.png" width="20%" />
 	</picture>
 	<picture>
-		<img src="App Store/preview-3.png" width="25%" />
+		<img src="App Store/preview-3.png" width="20%" />
 	</picture>
 	<picture>
-		<img src="App Store/preview-4.png" width="25%" />
+		<img src="App Store/preview-4.png" width="20%" />
 	</picture>
 </div>
 
