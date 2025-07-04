@@ -7,7 +7,7 @@ Mindful timer is a free and open source interval timer for stretching, meditatin
 		<img src="App Store/preview-1.png" width="25%" />
 	</picture>
 	<picture>
-		<img src="App Store/preview-2.png" width="205" />
+		<img src="App Store/preview-2.png" width="25%" />
 	</picture>
 	<picture>
 		<img src="App Store/preview-3.png" width="25%" />
