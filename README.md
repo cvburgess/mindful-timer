@@ -8,11 +8,19 @@ Mindful timer is a free and open source interval timer for stretching, meditatin
 
 <br/>
 
-<div width="100%" style="display: flex">
-	<img src="App Store/preview-1.png" width="25%" />
-	<img src="App Store/preview-2.png" width="25%" />
-	<img src="App Store/preview-3.png" width="25%" />
-	<img src="App Store/preview-4.png" width="25%" />
+<div width="100%">
+	<picture>
+		<img src="App Store/preview-1.png" width="20%" />
+	</picture>
+	<picture>
+		<img src="App Store/preview-2.png" width="20%" />
+	</picture>
+	<picture>
+		<img src="App Store/preview-3.png" width="20%" />
+	</picture>
+	<picture>
+		<img src="App Store/preview-4.png" width="20%" />
+	</picture>
 </div>
 
 ## Platform Support
@@ -33,7 +41,7 @@ The app is written natively in Swift/SwiftUI with the help of various AI tools.
 - [x] Customizable themes with automatic light and dark mode support
 - [x] Customizable sounds for round start, break start, and session end
 - [x] Haptic feedback (vibration) for round start, break start, and session end
-- [ ] Background support (timer continues when app is not open)
+- [x] Background support (timer continues when app is not open)
 - [ ] Live Activities (see timer progress from the lock screen)
 
 ## Getting Started
