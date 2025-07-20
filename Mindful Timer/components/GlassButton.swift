@@ -16,21 +16,23 @@ struct GlassButton<Label: View>: View {
     self.label = label()
   }
 
-// TODO: Add support again when Xcode 26 is supported
+  // TODO: Add support again when Xcode 26 is supported
   var body: some View {
-//    if #available(iOS 26.0, *) {
-//      Button(action: action) {
-//        label
-//      }
-//      .buttonStyle(.glass)
-//    } else {
-      Button(action: action) {
-        label
-      }
-      .buttonStyle(.bordered)
-      .tint(Color(.systemBackground))
+    //    if #available(iOS 26.0, *) {
+    //      Button(action: action) {
+    //        label
+    //      }
+    //      .buttonStyle(.glass)
+    //    } else {
+    Button(action: action) {
+      label
     }
-//  }
+    .buttonStyle(.borderedProminent)
+    .tint(Color(.systemBackground).opacity(0.75))
+    .cornerRadius(100)
+    .shadow(color: .black.opacity(0.15), radius: 10)
+  }
+  //  }
 }
 
 extension GlassButton where Label == Text {

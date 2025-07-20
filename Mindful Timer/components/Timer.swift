@@ -119,7 +119,7 @@ struct Timer: View {
       Text(formatTime(timeRemaining))
         .font(.system(size: 48, weight: .black).monospaced())
         .foregroundStyle(.primary)
-        .opacity(showTimerText ? (isBreak ? 0.2 : 0.75) : 0.0)
+        .opacity(showTimerText ? (isBreak ? 0.25 : 0.75) : 0.0)
         .animation(.easeInOut(duration: 0.5), value: isBreak)
         .animation(.easeOut(duration: 2.0), value: showTimerText)
     }

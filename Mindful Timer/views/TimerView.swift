@@ -58,12 +58,8 @@ struct SegmentedRadialProgressView: View {
     }
   }
 
-  private var progressColor: Color {
-    colorScheme == .dark ? .blue : .orange
-  }
-
   private var fillColor: Color {
-    Color.secondary.opacity(0.75)
+    .primary.opacity(0.5)
   }
 
   var body: some View {
